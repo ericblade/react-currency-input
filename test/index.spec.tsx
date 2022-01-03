@@ -16,7 +16,7 @@ describe('react-currency-input', function(){
     describe('default arguments', function(){
 
         before('render and locate element', function() {
-            this.renderedComponent = ReactTestUtils.renderIntoDocument(
+            this.renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput />
             );
 
@@ -27,7 +27,7 @@ describe('react-currency-input', function(){
         });
 
         it('<CurrencyInput> should have masked value of "0.00"', function() {
-            expect(this.renderedComponent.getMaskedValue()).to.equal('0.00')
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('0.00')
         });
 
 
@@ -43,7 +43,7 @@ describe('react-currency-input', function(){
     describe('custom arguments', function(){
 
         before('render and locate element', function() {
-            this.renderedComponent = ReactTestUtils.renderIntoDocument(
+            this.renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput
                   decimalSeparator=","
                   thousandSeparator="."
@@ -61,7 +61,7 @@ describe('react-currency-input', function(){
         });
 
         it('<CurrencyInput> should have masked value of "123.456,789"', function() {
-            expect(this.renderedComponent.getMaskedValue()).to.equal('123.456.789,000')
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('123.456.789,000')
         });
 
         it('<input> should be of type "tel"', function() {
@@ -78,54 +78,54 @@ describe('react-currency-input', function(){
     describe('properly convert number value props into display values', function(){
 
         it('adds decimals to whole numbers to match precision', function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput precision="2" value={123456789} />
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('123,456,789.00')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('123,456,789.00')
         });
 
         it('Does not change value when precision matches', function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput precision="2" value={1234567.89} />
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('1,234,567.89')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('1,234,567.89')
         });
 
 
         it('Rounds down properly when an number with extra decimals is passed in', function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput precision="2" value={1234567.89123} />
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('1,234,567.89')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('1,234,567.89')
         });
 
 
         it('Rounds up properly when an number with extra decimals is passed in', function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput precision="2" value={1234567.89999} />
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('1,234,567.90')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('1,234,567.90')
         });
 
         it('Rounds up the whole number when an number with extra decimals is passed in', function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput precision="0" value={1234567.89999} />
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('1,234,568')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('1,234,568')
         });
 
         it('it handles initial value as the integer 0,', function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput value={0} />
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('0.00')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('0.00')
         });
 
         it('it handles initial value as the float 0.00,', function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput value={0.00} />
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('0.00')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('0.00')
         });
 
     });
@@ -134,125 +134,125 @@ describe('react-currency-input', function(){
     describe('properly convert string value props into display values', function(){
 
         it('adds decimals to whole numbers to match precision', function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput precision="2" value="6300" />
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('6,300.00')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('6,300.00')
         });
 
 
         it('Does not change value when precision matches', function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput precision="2" value="1234567.89" />
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('1,234,567.89')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('1,234,567.89')
         });
 
 
         it('Rounds down properly when an number with extra decimals is passed in', function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput precision="2" value="1234567.89123" />
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('1,234,567.89')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('1,234,567.89')
         });
 
 
         it('Rounds up properly when an number with extra decimals is passed in', function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput precision="2" value="1234567.89999" />
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('1,234,567.90')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('1,234,567.90')
         });
 
 
         it('Rounds up the whole number when an number with extra decimals is passed in', function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput precision="0" value="1234567.89999" />
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('1,234,568')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('1,234,568')
         });
 
 
         it('Handles strings with separators', function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput value="1,000.01" />
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('1,000.01')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('1,000.01')
         });
 
 
         it('Handles strings with prefixes', function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput value="$10.01" prefix="$" />
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('$10.01')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('$10.01')
         });
 
         it('Handles strings with suffixes', function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput value="10.01 kr" suffix=" kr" />
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('10.01 kr')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('10.01 kr')
         });
 
 
         it('Handles strings with custom separators', function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput value="123.456.789,12" decimalSeparator="," thousandSeparator="."/>
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('123.456.789,12')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('123.456.789,12')
         });
 
 
         it("Handles 1,234,567.89 format", function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput value="1,234,567.89" decimalSeparator="." thousandSeparator=","/>
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('1,234,567.89')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('1,234,567.89')
         });
 
 
         it("Handles 1 234 567.89 format", function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput value="1,234,567.89" decimalSeparator="." thousandSeparator=" "/>
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('1 234 567.89')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('1 234 567.89')
         });
 
         it("Handles 1 234 567,89 format", function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput value="1 234 567,89" decimalSeparator="," thousandSeparator=" "/>
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('1 234 567,89')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('1 234 567,89')
         });
 
         it("Handles 1,234,567·89 format", function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput value="1,234,567·89" decimalSeparator="·" thousandSeparator=","/>
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('1,234,567·89')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('1,234,567·89')
         });
 
         it("Handles 1.234.567,89 format", function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput value="1.234.567,89" decimalSeparator="," thousandSeparator="."/>
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('1.234.567,89')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('1.234.567,89')
         });
 
         it("Handles 1˙234˙567,89 format", function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput value="1˙234˙567,89" decimalSeparator="," thousandSeparator="˙"/>
             );
-            expect (renderedComponent.getMaskedValue()).to.equal('1˙234˙567,89')
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('1˙234˙567,89')
         });
 
 
         it("Handles 1'234'567.89 format", function() {
-            var renderedComponent = ReactTestUtils.renderIntoDocument(
+            var renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput value="1'234'567.89" decimalSeparator="." thousandSeparator="'"/>
             );
-            expect (renderedComponent.getMaskedValue()).to.equal("1'234'567.89")
+            expect ((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal("1'234'567.89")
         });
 
 
@@ -264,8 +264,8 @@ describe('react-currency-input', function(){
         before('render and locate element', function() {
             this.handleChange = sinon.spy();
 
-            this.renderedComponent = ReactTestUtils.renderIntoDocument(
-                <CurrencyInput onChange={this.handleChange} value="0"/>
+            this.renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
+                <CurrencyInput onChangeEvent={this.handleChange} value="0"/>
             );
 
             this.inputComponent = ReactTestUtils.findRenderedDOMComponentWithTag(
@@ -277,6 +277,7 @@ describe('react-currency-input', function(){
         it('should call onChange', function() {
             this.inputComponent.value=123456789;
             ReactTestUtils.Simulate.change(this.inputComponent);
+            // @ts-ignore // something is up here with Mocha Test Explorer blowing on this line with "Property calledWidth does not exist on type 'Assertion'" but no other tools are finding it
             expect(this.handleChange).to.have.been.calledWith("1,234,567.89", 1234567.89);
         });
 
@@ -284,7 +285,7 @@ describe('react-currency-input', function(){
         it('should change the masked value', async function() {
             this.inputComponent.value=123456789;
             ReactTestUtils.Simulate.change(this.inputComponent);
-            expect(this.renderedComponent.getMaskedValue()).to.equal("1,234,567.89");
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal("1,234,567.89");
         });
 
 
@@ -301,8 +302,8 @@ describe('react-currency-input', function(){
     describe('negative numbers', function() {
 
         before('render and locate element', function() {
-            this.renderedComponent = ReactTestUtils.renderIntoDocument(
-                <CurrencyInput onChange={this.handleChange} value="0" allowNegative={true}/>
+            this.renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
+                <CurrencyInput onChangeEvent={this.handleChange} value="0" allowNegative={true}/>
             );
 
             this.inputComponent = ReactTestUtils.findRenderedDOMComponentWithTag(
@@ -317,51 +318,51 @@ describe('react-currency-input', function(){
         });
 
         it('should render 0 without negative sign', function() {
-            expect(this.renderedComponent.getMaskedValue()).to.equal('0.00');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('0.00');
             this.inputComponent.value = "-0"; ReactTestUtils.Simulate.change(this.inputComponent);
-            expect(this.renderedComponent.getMaskedValue()).to.equal('0.00');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('0.00');
         });
 
         it('should render number with no or even number of "-" as positive', function() {
-            expect(this.renderedComponent.getMaskedValue()).to.equal('0.00');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('0.00');
             this.inputComponent.value = "123456"; ReactTestUtils.Simulate.change(this.inputComponent);
-            expect(this.renderedComponent.getMaskedValue()).to.equal('1,234.56');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('1,234.56');
             this.inputComponent.value = "--123456"; ReactTestUtils.Simulate.change(this.inputComponent);
-            expect(this.renderedComponent.getMaskedValue()).to.equal('1,234.56');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('1,234.56');
             this.inputComponent.value = "123--456"; ReactTestUtils.Simulate.change(this.inputComponent);
-            expect(this.renderedComponent.getMaskedValue()).to.equal('1,234.56');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('1,234.56');
             this.inputComponent.value = "123456--"; ReactTestUtils.Simulate.change(this.inputComponent);
-            expect(this.renderedComponent.getMaskedValue()).to.equal('1,234.56');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('1,234.56');
             this.inputComponent.value = "--123--456--"; ReactTestUtils.Simulate.change(this.inputComponent);
-            expect(this.renderedComponent.getMaskedValue()).to.equal('1,234.56');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('1,234.56');
             this.inputComponent.value = "123456----"; ReactTestUtils.Simulate.change(this.inputComponent);
-            expect(this.renderedComponent.getMaskedValue()).to.equal('1,234.56');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('1,234.56');
         });
 
         it('should render number with odd number of "-" as negative', function() {
-            expect(this.renderedComponent.getMaskedValue()).to.equal('0.00');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('0.00');
             this.inputComponent.value = "-123456"; ReactTestUtils.Simulate.change(this.inputComponent);
-            expect(this.renderedComponent.getMaskedValue()).to.equal('-1,234.56');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('-1,234.56');
             this.inputComponent.value = "123-456"; ReactTestUtils.Simulate.change(this.inputComponent);
-            expect(this.renderedComponent.getMaskedValue()).to.equal('-1,234.56');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('-1,234.56');
             this.inputComponent.value = "123456-"; ReactTestUtils.Simulate.change(this.inputComponent);
-            expect(this.renderedComponent.getMaskedValue()).to.equal('-1,234.56');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('-1,234.56');
             this.inputComponent.value = "-123-456-"; ReactTestUtils.Simulate.change(this.inputComponent);
-            expect(this.renderedComponent.getMaskedValue()).to.equal('-1,234.56');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('-1,234.56');
         });
 
         it('should correctly change between negative and positive numbers', function() {
-            expect(this.renderedComponent.getMaskedValue()).to.equal('0.00');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('0.00');
             this.inputComponent.value = "123456"; ReactTestUtils.Simulate.change(this.inputComponent);
-            expect(this.renderedComponent.getMaskedValue()).to.equal('1,234.56');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('1,234.56');
             this.inputComponent.value = "1,234.56-"; ReactTestUtils.Simulate.change(this.inputComponent);
-            expect(this.renderedComponent.getMaskedValue()).to.equal('-1,234.56');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('-1,234.56');
             this.inputComponent.value = "-1,234.56-"; ReactTestUtils.Simulate.change(this.inputComponent);
-            expect(this.renderedComponent.getMaskedValue()).to.equal('1,234.56');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('1,234.56');
             this.inputComponent.value = "1-,234.56"; ReactTestUtils.Simulate.change(this.inputComponent);
-            expect(this.renderedComponent.getMaskedValue()).to.equal('-1,234.56');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('-1,234.56');
             this.inputComponent.value = "-1,234.-56"; ReactTestUtils.Simulate.change(this.inputComponent);
-            expect(this.renderedComponent.getMaskedValue()).to.equal('1,234.56');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('1,234.56');
         });
 
     });
@@ -370,8 +371,8 @@ describe('react-currency-input', function(){
     describe('currency prefix', function() {
 
         before('render and locate element', function () {
-            this.renderedComponent = ReactTestUtils.renderIntoDocument(
-                <CurrencyInput onChange={this.handleChange} value="0" prefix="$"/>
+            this.renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
+                <CurrencyInput onChangeEvent={this.handleChange} value="0" prefix="$"/>
             );
 
             this.inputComponent = ReactTestUtils.findRenderedDOMComponentWithTag(
@@ -381,7 +382,7 @@ describe('react-currency-input', function(){
         });
 
         it('should render the prefix', function() {
-            expect(this.renderedComponent.getMaskedValue()).to.equal('$0.00');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('$0.00');
         });
 
     });
@@ -389,8 +390,8 @@ describe('react-currency-input', function(){
     describe('currency suffix', function() {
 
         before('render and locate element', function () {
-            this.renderedComponent = ReactTestUtils.renderIntoDocument(
-                <CurrencyInput onChange={this.handleChange} value="0" suffix=" kr"/>
+            this.renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
+                <CurrencyInput onChangeEvent={this.handleChange} value="0" suffix=" kr"/>
             );
 
             this.inputComponent = ReactTestUtils.findRenderedDOMComponentWithTag(
@@ -400,7 +401,7 @@ describe('react-currency-input', function(){
         });
 
         it('should render the suffix', function() {
-            expect(this.renderedComponent.getMaskedValue()).to.equal('0.00 kr');
+            expect((this.renderedComponent as CurrencyInput).getMaskedValue()).to.equal('0.00 kr');
         });
 
     });
@@ -420,14 +421,17 @@ describe('react-currency-input', function(){
 
             const componentProps = Object.assign({}, defaultProps, props);
 
-            const renderedComponent = ReactDOM.render(
-                <CurrencyInput {...componentProps} />,
-                divElem
+            // const renderedComponent = ReactDOM.render(
+                // <CurrencyInput {...componentProps} />,
+                // divElem
+            // );
+            const renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
+                <CurrencyInput {...componentProps} />
             );
             const inputComponent = ReactTestUtils.findRenderedDOMComponentWithTag(
-                renderedComponent,
+                renderedComponent as unknown as CurrencyInput,
                 'input'
-            );
+            ) as HTMLInputElement;
 
             inputComponent.value = "0";
             ReactTestUtils.Simulate.change(inputComponent);
@@ -441,7 +445,7 @@ describe('react-currency-input', function(){
 
         it('sanity - renders "$0.00 s"', function() {
             const { renderedComponent } = renderComponent();
-            expect(renderedComponent.getMaskedValue()).to.equal('$0.00 s');
+            expect((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('$0.00 s');
         });
 
         it.skip('should consider precision absence', function() { // TODO: I don't know why it should equal 2 but equals 4. What is this testing?

@@ -1,13 +1,8 @@
-// import './object-assign-polyfill';
-
 import React, { Ref } from 'react'
-import { FocusEventHandler } from 'react'
-import { EventHandler } from 'react'
 import ReactDOM from 'react-dom'
 import mask from './mask'
 
 type CurrencyInputProps = {
-    onChange?: (maskedValue: string, value: number | string, event: Event) => void,
     onChangeEvent?: (event: Event, maskedValue: string, value: number | string) => void,
     onClick?: (event: Event) => void,
     onFocus?: (event: FocusEvent) => void,
@@ -24,17 +19,17 @@ type CurrencyInputProps = {
     selectAllOnFocus?: boolean,
     autoFocus?: boolean,
     style?: React.CSSProperties,
+    id?: string,
 }
 
 type CurrencyInputState = {
     maskedValue: string,
-    value: number | string,
+    value: number | string, // TODO: should be string? should also have a separate float field for 'pennies'
     customProps: any,
 }
 
 class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputState> {
     static defaultProps = {
-        onChange: function(maskedValue, value, event) {},
         onChangeEvent: function(event, maskedValue, value) {},
         autoFocus: false,
         value: '0',
@@ -82,7 +77,6 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      */
     static prepareProps(props) {
         let customProps = {...props}; // babeljs converts to Object.assign, then polyfills.
-        delete customProps.onChange;
         delete customProps.onChangeEvent;
         delete customProps.value;
         delete customProps.decimalSeparator;
@@ -277,7 +271,6 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
             );
             return { maskedValue, value };
         }, () => {
-            this.props.onChange(this.state.maskedValue, this.state.value, event);
             this.props.onChangeEvent(event, this.state.maskedValue, this.state.value);
         })
     }
@@ -328,16 +321,10 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
                 style={this.props.style}
                 onClick={this.props.onClick}
                 onBlur={this.props.onBlur}
+                id={this.props.id}
             />
         )
     }
 }
 
-
-
-/**
- * Prop validation.
- * @see https://facebook.github.io/react/docs/component-specs.html#proptypes
- */
-
-export default CurrencyInput
+export default CurrencyInput;

@@ -123,7 +123,6 @@ define("mask", ["require", "exports"], function (require, exports) {
     }
     exports.default = mask;
 });
-// import './object-assign-polyfill';
 define("index", ["require", "exports", "react", "react-dom", "mask"], function (require, exports, react_1, react_dom_1, mask_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -157,7 +156,6 @@ define("index", ["require", "exports", "react", "react-dom", "mask"], function (
          */
         CurrencyInput.prepareProps = function (props) {
             var customProps = __assign({}, props); // babeljs converts to Object.assign, then polyfills.
-            delete customProps.onChange;
             delete customProps.onChangeEvent;
             delete customProps.value;
             delete customProps.decimalSeparator;
@@ -312,7 +310,6 @@ define("index", ["require", "exports", "react", "react-dom", "mask"], function (
                 var _a = (0, mask_1.default)(event.target.value, props.precision, props.decimalSeparator, props.thousandSeparator, props.allowNegative, props.prefix, props.suffix), maskedValue = _a.maskedValue, value = _a.value;
                 return { maskedValue: maskedValue, value: value };
             }, function () {
-                _this.props.onChange(_this.state.maskedValue, _this.state.value, event);
                 _this.props.onChangeEvent(event, _this.state.maskedValue, _this.state.value);
             });
         };
@@ -346,10 +343,9 @@ define("index", ["require", "exports", "react", "react-dom", "mask"], function (
          */
         CurrencyInput.prototype.render = function () {
             var _this = this;
-            return (react_1.default.createElement("input", __assign({ ref: function (input) { _this.theInput = input; }, type: this.props.inputType, value: this.state.maskedValue, onChange: this.handleChangeEvent, onFocus: this.handleFocus, onMouseUp: this.handleFocus }, this.state.customProps, { style: this.props.style, onClick: this.props.onClick, onBlur: this.props.onBlur })));
+            return (react_1.default.createElement("input", __assign({ ref: function (input) { _this.theInput = input; }, type: this.props.inputType, value: this.state.maskedValue, onChange: this.handleChangeEvent, onFocus: this.handleFocus, onMouseUp: this.handleFocus }, this.state.customProps, { style: this.props.style, onClick: this.props.onClick, onBlur: this.props.onBlur, id: this.props.id })));
         };
         CurrencyInput.defaultProps = {
-            onChange: function (maskedValue, value, event) { },
             onChangeEvent: function (event, maskedValue, value) { },
             autoFocus: false,
             value: '0',
@@ -365,10 +361,6 @@ define("index", ["require", "exports", "react", "react-dom", "mask"], function (
         };
         return CurrencyInput;
     }(react_1.default.Component));
-    /**
-     * Prop validation.
-     * @see https://facebook.github.io/react/docs/component-specs.html#proptypes
-     */
     exports.default = CurrencyInput;
 });
 Object.assign = Object.assign ||

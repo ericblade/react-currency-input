@@ -8,7 +8,6 @@ declare module "mask" {
 declare module "index" {
     import React from 'react';
     type CurrencyInputProps = {
-        onChange?: (maskedValue: string, value: number | string, event: Event) => void;
         onChangeEvent?: (event: Event, maskedValue: string, value: number | string) => void;
         onClick?: (event: Event) => void;
         onFocus?: (event: FocusEvent) => void;
@@ -25,6 +24,7 @@ declare module "index" {
         selectAllOnFocus?: boolean;
         autoFocus?: boolean;
         style?: React.CSSProperties;
+        id?: string;
     };
     type CurrencyInputState = {
         maskedValue: string;
@@ -33,7 +33,6 @@ declare module "index" {
     };
     class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputState> {
         static defaultProps: {
-            onChange: (maskedValue: any, value: any, event: any) => void;
             onChangeEvent: (event: any, maskedValue: any, value: any) => void;
             autoFocus: boolean;
             value: string;
@@ -119,9 +118,5 @@ declare module "index" {
          */
         render(): JSX.Element;
     }
-    /**
-     * Prop validation.
-     * @see https://facebook.github.io/react/docs/component-specs.html#proptypes
-     */
     export default CurrencyInput;
 }

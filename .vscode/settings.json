@@ -1,0 +1,10 @@
+{
+    "mochaExplorer.files": "test/**/*.{ts,tsx}",
+    "mochaExplorer.require": "ts-node/register",
+    "mochaExplorer.logpanel": true,
+    "mochaExplorer.nodePath": null,
+    "mochaExplorer.env": {
+        "NODE_ENV": "test",
+        "TS_NODE_PROJECT": "tsconfig.test.json"
+    },
+}

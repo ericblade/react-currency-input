@@ -1,4 +1,3 @@
-// import './object-assign-polyfill';
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -55,7 +54,6 @@ var CurrencyInput = /** @class */ (function (_super) {
      */
     CurrencyInput.prepareProps = function (props) {
         var customProps = __assign({}, props); // babeljs converts to Object.assign, then polyfills.
-        delete customProps.onChange;
         delete customProps.onChangeEvent;
         delete customProps.value;
         delete customProps.decimalSeparator;
@@ -210,7 +208,6 @@ var CurrencyInput = /** @class */ (function (_super) {
             var _a = mask(event.target.value, props.precision, props.decimalSeparator, props.thousandSeparator, props.allowNegative, props.prefix, props.suffix), maskedValue = _a.maskedValue, value = _a.value;
             return { maskedValue: maskedValue, value: value };
         }, function () {
-            _this.props.onChange(_this.state.maskedValue, _this.state.value, event);
             _this.props.onChangeEvent(event, _this.state.maskedValue, _this.state.value);
         });
     };
@@ -244,10 +241,9 @@ var CurrencyInput = /** @class */ (function (_super) {
      */
     CurrencyInput.prototype.render = function () {
         var _this = this;
-        return (React.createElement("input", __assign({ ref: function (input) { _this.theInput = input; }, type: this.props.inputType, value: this.state.maskedValue, onChange: this.handleChangeEvent, onFocus: this.handleFocus, onMouseUp: this.handleFocus }, this.state.customProps, { style: this.props.style, onClick: this.props.onClick, onBlur: this.props.onBlur })));
+        return (React.createElement("input", __assign({ ref: function (input) { _this.theInput = input; }, type: this.props.inputType, value: this.state.maskedValue, onChange: this.handleChangeEvent, onFocus: this.handleFocus, onMouseUp: this.handleFocus }, this.state.customProps, { style: this.props.style, onClick: this.props.onClick, onBlur: this.props.onBlur, id: this.props.id })));
     };
     CurrencyInput.defaultProps = {
-        onChange: function (maskedValue, value, event) { },
         onChangeEvent: function (event, maskedValue, value) { },
         autoFocus: false,
         value: '0',
@@ -263,8 +259,4 @@ var CurrencyInput = /** @class */ (function (_super) {
     };
     return CurrencyInput;
 }(React.Component));
-/**
- * Prop validation.
- * @see https://facebook.github.io/react/docs/component-specs.html#proptypes
- */
 export default CurrencyInput;

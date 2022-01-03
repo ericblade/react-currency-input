@@ -1,6 +1,5 @@
 import React from 'react';
 declare type CurrencyInputProps = {
-    onChange?: (maskedValue: string, value: number | string, event: Event) => void;
     onChangeEvent?: (event: Event, maskedValue: string, value: number | string) => void;
     onClick?: (event: Event) => void;
     onFocus?: (event: FocusEvent) => void;
@@ -17,6 +16,7 @@ declare type CurrencyInputProps = {
     selectAllOnFocus?: boolean;
     autoFocus?: boolean;
     style?: React.CSSProperties;
+    id?: string;
 };
 declare type CurrencyInputState = {
     maskedValue: string;
@@ -25,7 +25,6 @@ declare type CurrencyInputState = {
 };
 declare class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputState> {
     static defaultProps: {
-        onChange: (maskedValue: any, value: any, event: any) => void;
         onChangeEvent: (event: any, maskedValue: any, value: any) => void;
         autoFocus: boolean;
         value: string;
@@ -111,8 +110,4 @@ declare class CurrencyInput extends React.Component<CurrencyInputProps, Currency
      */
     render(): JSX.Element;
 }
-/**
- * Prop validation.
- * @see https://facebook.github.io/react/docs/component-specs.html#proptypes
- */
 export default CurrencyInput;
