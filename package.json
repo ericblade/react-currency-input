@@ -2,9 +2,9 @@
   "name": "@ericblade/react-currency-input",
   "version": "1.0.0",
   "description": "React component for inputing currency amounts",
-  "main": "lib/react-currency-input.cjs.js",
-  "jsnext:main": "lib/react-currency-input.es.js",
-  "module": "lib/react-currency-input.es.js",
+  "main": "dist/cjs/index.js",
+  "jsnext:main": "dist/esm/index.js",
+  "module": "dist/esm/index.js",
   "scripts": {
     "lint": "eslint src/**",
     "build": "npm run build:es2015 && npm run build:esm && npm run build:cjs",
