@@ -1,3 +1,5 @@
+// TODO: SOMETHING is causing ts-mocha to not exit without the --exit flag supplied.
+// TODO: This means something is wrong, but I don't know what.
 import './setup';
 import React from 'react'
 import chai, {expect} from 'chai'

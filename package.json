@@ -2,12 +2,13 @@
   "name": "@ericblade/react-currency-input",
   "version": "1.0.0",
   "description": "React component for inputing currency amounts",
+  "browser": "dist/amd/index.js",
   "main": "dist/cjs/index.js",
-  "jsnext:main": "dist/esm/index.js",
   "module": "dist/esm/index.js",
   "scripts": {
     "lint": "eslint src/**",
-    "build": "npm run build:es2015 && npm run build:esm && npm run build:cjs",
+    "build": "npm run build:es2015 && npm run build:esm && npm run build:cjs && npm run build:amd",
+    "build:amd": "tsc --module amd --target es5 --outFile dist/amd/index.js",
     "build:es2015": "tsc --module es2015 --target es2015 --outDir dist/es2015",
     "build:esm": "tsc --module es2015 --target es5 --outDir dist/esm",
     "build:cjs": "tsc --module commonjs --target es5 --outDir dist/cjs",
@@ -18,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jsillitoe/react-currency-input.git"
+    "url": "git+https://github.com/ericblade/react-currency-input.git"
   },
   "keywords": [
     "react",
@@ -30,13 +31,15 @@
     "react-component"
   ],
   "author": "Joe Sillitoe <jsillitoe@gmail.com>",
+  "contributors": [
+    "Eric Blade <blade.eric@gmail.com>"
+  ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jsillitoe/react-currency-input/issues"
+    "url": "https://github.com/ericblade/react-currency-input/issues"
   },
-  "homepage": "https://github.com/jsillitoe/react-currency-input#readme",
+  "homepage": "https://github.com/ericblade/react-currency-input#readme",
   "peerDependencies": {
-    "prop-types": "^15.6.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0"
   },
@@ -53,12 +56,11 @@
     "sinon-chai": "^2.8.0",
     "ts-mocha": "^8.0.0",
     "ts-node": "^10.4.0",
-    "typescript": "^4.5.4"
-  },
-  "dependencies": {
+    "typescript": "^4.5.4",
     "jsdom": "^19.0.0",
-    "prop-types": "^15.6.0",
     "react": "^17.0.0",
     "react-dom": "^17.0.0"
+  },
+  "dependencies": {
   }
 }

@@ -1,11 +1,12 @@
 {
     "compilerOptions": {
         "jsx": "react",
-        "outDir": "./lib",
+        "outDir": "./dist",
         "allowJs": true,
         "target": "es5",
         "esModuleInterop": true,
         "moduleResolution": "node",
+        "declaration": true,
         "lib": ["DOM", "ES5", "ES2015", "ES2016", "ES2017", "ES2018", "ESNext"],
     },
     "include": [
