@@ -274,11 +274,11 @@ describe('react-currency-input', function(){
             );
         });
 
-        it('should call onChange', function() {
+        it('should call onChangeEvent', function() {
             this.inputComponent.value=123456789;
             ReactTestUtils.Simulate.change(this.inputComponent);
             // @ts-ignore // something is up here with Mocha Test Explorer blowing on this line with "Property calledWidth does not exist on type 'Assertion'" but no other tools are finding it
-            expect(this.handleChange).to.have.been.calledWith("1,234,567.89", 1234567.89);
+            expect(this.handleChange).to.have.been.calledWith(sinon.match.any, "1,234,567.89", 1234567.89);
         });
 
 
