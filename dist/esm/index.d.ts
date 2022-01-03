@@ -1,8 +1,10 @@
-import './object-assign-polyfill';
 import React from 'react';
 declare type CurrencyInputProps = {
     onChange?: (maskedValue: string, value: number | string, event: Event) => void;
     onChangeEvent?: (event: Event, maskedValue: string, value: number | string) => void;
+    onClick?: (event: Event) => void;
+    onFocus?: (event: FocusEvent) => void;
+    onBlur?: (event: FocusEvent) => void;
     value?: number | string;
     decimalSeparator?: string;
     thousandSeparator?: string;
@@ -14,6 +16,7 @@ declare type CurrencyInputProps = {
     suffix?: string;
     selectAllOnFocus?: boolean;
     autoFocus?: boolean;
+    style?: React.CSSProperties;
 };
 declare type CurrencyInputState = {
     maskedValue: string;

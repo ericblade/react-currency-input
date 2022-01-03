@@ -1,3 +1,4 @@
+// import './object-assign-polyfill';
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -24,7 +25,6 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-import './object-assign-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import mask from './mask';
@@ -219,6 +219,9 @@ var CurrencyInput = /** @class */ (function (_super) {
      * @param event
      */
     CurrencyInput.prototype.handleFocus = function (event) {
+        if (this.props.onFocus) {
+            this.props.onFocus(event);
+        }
         if (!this.theInput)
             return;
         var node = ReactDOM.findDOMNode(this.theInput);
@@ -241,7 +244,7 @@ var CurrencyInput = /** @class */ (function (_super) {
      */
     CurrencyInput.prototype.render = function () {
         var _this = this;
-        return (React.createElement("input", __assign({ ref: function (input) { _this.theInput = input; }, type: this.props.inputType, value: this.state.maskedValue, onChange: this.handleChangeEvent, onFocus: this.handleFocus, onMouseUp: this.handleFocus }, this.state.customProps)));
+        return (React.createElement("input", __assign({ ref: function (input) { _this.theInput = input; }, type: this.props.inputType, value: this.state.maskedValue, onChange: this.handleChangeEvent, onFocus: this.handleFocus, onMouseUp: this.handleFocus }, this.state.customProps, { style: this.props.style, onClick: this.props.onClick, onBlur: this.props.onBlur })));
     };
     CurrencyInput.defaultProps = {
         onChange: function (maskedValue, value, event) { },

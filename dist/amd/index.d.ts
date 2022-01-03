@@ -6,11 +6,13 @@ declare module "mask" {
     };
 }
 declare module "index" {
-    import './object-assign-polyfill';
     import React from 'react';
     type CurrencyInputProps = {
         onChange?: (maskedValue: string, value: number | string, event: Event) => void;
         onChangeEvent?: (event: Event, maskedValue: string, value: number | string) => void;
+        onClick?: (event: Event) => void;
+        onFocus?: (event: FocusEvent) => void;
+        onBlur?: (event: FocusEvent) => void;
         value?: number | string;
         decimalSeparator?: string;
         thousandSeparator?: string;
@@ -22,6 +24,7 @@ declare module "index" {
         suffix?: string;
         selectAllOnFocus?: boolean;
         autoFocus?: boolean;
+        style?: React.CSSProperties;
     };
     type CurrencyInputState = {
         maskedValue: string;

@@ -1,12 +1,17 @@
-import './object-assign-polyfill';
+// import './object-assign-polyfill';
 
 import React, { Ref } from 'react'
+import { FocusEventHandler } from 'react'
+import { EventHandler } from 'react'
 import ReactDOM from 'react-dom'
 import mask from './mask'
 
 type CurrencyInputProps = {
     onChange?: (maskedValue: string, value: number | string, event: Event) => void,
     onChangeEvent?: (event: Event, maskedValue: string, value: number | string) => void,
+    onClick?: (event: Event) => void,
+    onFocus?: (event: FocusEvent) => void,
+    onBlur?: (event: FocusEvent) => void,
     value?: number | string,
     decimalSeparator?: string,
     thousandSeparator?: string,
@@ -18,6 +23,7 @@ type CurrencyInputProps = {
     suffix?: string,
     selectAllOnFocus?: boolean,
     autoFocus?: boolean,
+    style?: React.CSSProperties,
 }
 
 type CurrencyInputState = {
@@ -282,6 +288,9 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      * @param event
      */
     handleFocus(event) {
+        if (this.props.onFocus) {
+            this.props.onFocus(event);
+        }
         if (!this.theInput) return;
         let node = ReactDOM.findDOMNode(this.theInput) as HTMLInputElement;
 
@@ -316,6 +325,9 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
                 onFocus={this.handleFocus}
                 onMouseUp={this.handleFocus}
                 {...this.state.customProps}
+                style={this.props.style}
+                onClick={this.props.onClick}
+                onBlur={this.props.onBlur}
             />
         )
     }

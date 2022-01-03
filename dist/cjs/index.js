@@ -1,4 +1,5 @@
 "use strict";
+// import './object-assign-polyfill';
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -29,7 +30,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-require("./object-assign-polyfill");
 var react_1 = __importDefault(require("react"));
 var react_dom_1 = __importDefault(require("react-dom"));
 var mask_1 = __importDefault(require("./mask"));
@@ -224,6 +224,9 @@ var CurrencyInput = /** @class */ (function (_super) {
      * @param event
      */
     CurrencyInput.prototype.handleFocus = function (event) {
+        if (this.props.onFocus) {
+            this.props.onFocus(event);
+        }
         if (!this.theInput)
             return;
         var node = react_dom_1.default.findDOMNode(this.theInput);
@@ -246,7 +249,7 @@ var CurrencyInput = /** @class */ (function (_super) {
      */
     CurrencyInput.prototype.render = function () {
         var _this = this;
-        return (react_1.default.createElement("input", __assign({ ref: function (input) { _this.theInput = input; }, type: this.props.inputType, value: this.state.maskedValue, onChange: this.handleChangeEvent, onFocus: this.handleFocus, onMouseUp: this.handleFocus }, this.state.customProps)));
+        return (react_1.default.createElement("input", __assign({ ref: function (input) { _this.theInput = input; }, type: this.props.inputType, value: this.state.maskedValue, onChange: this.handleChangeEvent, onFocus: this.handleFocus, onMouseUp: this.handleFocus }, this.state.customProps, { style: this.props.style, onClick: this.props.onClick, onBlur: this.props.onBlur })));
     };
     CurrencyInput.defaultProps = {
         onChange: function (maskedValue, value, event) { },

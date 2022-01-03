@@ -27,18 +27,6 @@ var __assign = (this && this.__assign) || function () {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.assign = Object.assign ||
-    function (target) {
-        for (var i = 1; i < arguments.length; i++) {
-            var source = arguments[i];
-            for (var key in source) {
-                if (Object.prototype.hasOwnProperty.call(source, key)) {
-                    target[key] = source[key];
-                }
-            }
-        }
-        return target;
-    };
 define("mask", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -135,7 +123,8 @@ define("mask", ["require", "exports"], function (require, exports) {
     }
     exports.default = mask;
 });
-define("index", ["require", "exports", "react", "react-dom", "mask", "./object-assign-polyfill"], function (require, exports, react_1, react_dom_1, mask_1) {
+// import './object-assign-polyfill';
+define("index", ["require", "exports", "react", "react-dom", "mask"], function (require, exports, react_1, react_dom_1, mask_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     react_1 = __importDefault(react_1);
@@ -332,6 +321,9 @@ define("index", ["require", "exports", "react", "react-dom", "mask", "./object-a
          * @param event
          */
         CurrencyInput.prototype.handleFocus = function (event) {
+            if (this.props.onFocus) {
+                this.props.onFocus(event);
+            }
             if (!this.theInput)
                 return;
             var node = react_dom_1.default.findDOMNode(this.theInput);
@@ -354,7 +346,7 @@ define("index", ["require", "exports", "react", "react-dom", "mask", "./object-a
          */
         CurrencyInput.prototype.render = function () {
             var _this = this;
-            return (react_1.default.createElement("input", __assign({ ref: function (input) { _this.theInput = input; }, type: this.props.inputType, value: this.state.maskedValue, onChange: this.handleChangeEvent, onFocus: this.handleFocus, onMouseUp: this.handleFocus }, this.state.customProps)));
+            return (react_1.default.createElement("input", __assign({ ref: function (input) { _this.theInput = input; }, type: this.props.inputType, value: this.state.maskedValue, onChange: this.handleChangeEvent, onFocus: this.handleFocus, onMouseUp: this.handleFocus }, this.state.customProps, { style: this.props.style, onClick: this.props.onClick, onBlur: this.props.onBlur })));
         };
         CurrencyInput.defaultProps = {
             onChange: function (maskedValue, value, event) { },
@@ -379,3 +371,15 @@ define("index", ["require", "exports", "react", "react-dom", "mask", "./object-a
      */
     exports.default = CurrencyInput;
 });
+Object.assign = Object.assign ||
+    function (target) {
+        for (var i = 1; i < arguments.length; i++) {
+            var source = arguments[i];
+            for (var key in source) {
+                if (Object.prototype.hasOwnProperty.call(source, key)) {
+                    target[key] = source[key];
+                }
+            }
+        }
+        return target;
+    };

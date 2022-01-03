@@ -1,4 +1,4 @@
-import './object-assign-polyfill';
+// import './object-assign-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import mask from './mask';
@@ -190,6 +190,9 @@ class CurrencyInput extends React.Component {
      * @param event
      */
     handleFocus(event) {
+        if (this.props.onFocus) {
+            this.props.onFocus(event);
+        }
         if (!this.theInput)
             return;
         let node = ReactDOM.findDOMNode(this.theInput);
@@ -211,7 +214,7 @@ class CurrencyInput extends React.Component {
      * @see https://facebook.github.io/react/docs/component-specs.html#render
      */
     render() {
-        return (React.createElement("input", Object.assign({ ref: (input) => { this.theInput = input; }, type: this.props.inputType, value: this.state.maskedValue, onChange: this.handleChangeEvent, onFocus: this.handleFocus, onMouseUp: this.handleFocus }, this.state.customProps)));
+        return (React.createElement("input", Object.assign({ ref: (input) => { this.theInput = input; }, type: this.props.inputType, value: this.state.maskedValue, onChange: this.handleChangeEvent, onFocus: this.handleFocus, onMouseUp: this.handleFocus }, this.state.customProps, { style: this.props.style, onClick: this.props.onClick, onBlur: this.props.onBlur })));
     }
 }
 CurrencyInput.defaultProps = {
