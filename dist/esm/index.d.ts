@@ -1,6 +1,5 @@
-import React from 'react';
-import { RefObject } from 'react';
-declare type CurrencyInputProps = {
+import React, { RefObject } from 'react';
+export declare type CurrencyInputProps = {
     onChangeEvent?: (event: Event, maskedValue: string, value: number | string) => void;
     onClick?: (event: Event) => void;
     onFocus?: (event: FocusEvent) => void;
@@ -18,6 +17,7 @@ declare type CurrencyInputProps = {
     autoFocus?: boolean;
     style?: React.CSSProperties;
     id?: string;
+    tabIndex?: number;
 };
 declare type CurrencyInputState = {
     maskedValue: string;
@@ -92,7 +92,7 @@ declare class CurrencyInput extends React.Component<CurrencyInputProps, Currency
      * @param start number
      * @param end number
      */
-    setSelectionRange(node: any, start: any, end: any): void;
+    setSelectionRange(node: HTMLInputElement, start: number, end: number): void;
     /**
      * onChange Event Handler
      * @param event

@@ -5,6 +5,7 @@ class CurrencyInput extends React.Component {
         super(props);
         this.handleChangeEvent = this.handleChangeEvent.bind(this);
         this.handleFocus = this.handleFocus.bind(this);
+        this.handleBlur = this.handleBlur.bind(this);
         this.setSelectionRange = this.setSelectionRange.bind(this);
         this.state = CurrencyInput.prepareProps(props);
         this.theInput = React.createRef();
@@ -91,7 +92,6 @@ class CurrencyInput extends React.Component {
         const node = this.theInput.current;
         let selectionStart, selectionEnd;
         if (this.props.autoFocus) {
-            node.focus();
             // set cursor to end of input field excluding suffix
             selectionEnd = this.state.maskedValue.length - this.props.suffix.length;
             selectionStart = selectionEnd;
@@ -122,8 +122,8 @@ class CurrencyInput extends React.Component {
      */
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (snapshot !== null) {
-            this.inputSelectionStart = snapshot.selectionStart;
-            this.inputSelectionEnd = snapshot.selectionEnd;
+            this.inputSelectionStart = snapshot.inputSelectionStart;
+            this.inputSelectionEnd = snapshot.inputSelectionEnd;
         }
         const { decimalSeparator } = this.props;
         const node = this.theInput.current;
@@ -163,9 +163,20 @@ class CurrencyInput extends React.Component {
      * @param end number
      */
     setSelectionRange(node, start, end) {
-        console.warn('* document.activeElement', document.activeElement);
+        if (!node) {
+            console.warn('* setSelectionRange: node is empty');
+            return;
+        }
+        if (isNaN(start) || isNaN(end)) {
+            console.warn('* setSelectionRange: received NaN!');
+            return;
+        }
         if (document.activeElement === node) {
+            console.warn('* setting selection range', start, end);
             node.setSelectionRange(start, end);
+        }
+        else {
+            console.warn('* setSelectionRange not activeElement!', document.activeElement, node);
         }
     }
     /**
@@ -187,6 +198,7 @@ class CurrencyInput extends React.Component {
      * @param event
      */
     handleFocus(event) {
+        // console.warn('**** handleFocus called!', this.theInput.current);
         if (this.props.onFocus) {
             this.props.onFocus(event);
         }
@@ -203,8 +215,10 @@ class CurrencyInput extends React.Component {
         this.inputSelectionEnd = selectionEnd;
     }
     handleBlur(event) {
-        this.inputSelectionStart = 0;
-        this.inputSelectionEnd = 0;
+        console.warn('**** handleBlur called');
+        if (this.props.onBlur) {
+            this.props.onBlur(event);
+        }
     }
     /**
      * Component lifecycle function.
@@ -212,7 +226,7 @@ class CurrencyInput extends React.Component {
      * @see https://facebook.github.io/react/docs/component-specs.html#render
      */
     render() {
-        return (React.createElement("input", Object.assign({ ref: this.theInput, type: this.props.inputType, value: this.state.maskedValue, onChange: this.handleChangeEvent, onFocus: this.handleFocus, onMouseUp: this.handleFocus }, this.state.customProps, { style: this.props.style, onClick: this.props.onClick, onBlur: this.props.onBlur, id: this.props.id })));
+        return (React.createElement("input", Object.assign({ ref: this.theInput, type: this.props.inputType, value: this.state.maskedValue, onChange: this.handleChangeEvent, onFocus: this.handleFocus }, this.state.customProps, { style: this.props.style, onClick: this.props.onClick, onBlur: this.handleBlur, id: this.props.id, autoFocus: this.props.autoFocus, tabIndex: this.props.tabIndex })));
     }
 }
 CurrencyInput.defaultProps = {

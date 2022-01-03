@@ -37,6 +37,7 @@ var CurrencyInput = /** @class */ (function (_super) {
         var _this = _super.call(this, props) || this;
         _this.handleChangeEvent = _this.handleChangeEvent.bind(_this);
         _this.handleFocus = _this.handleFocus.bind(_this);
+        _this.handleBlur = _this.handleBlur.bind(_this);
         _this.setSelectionRange = _this.setSelectionRange.bind(_this);
         _this.state = CurrencyInput.prepareProps(props);
         _this.theInput = react_1.default.createRef();
@@ -124,7 +125,6 @@ var CurrencyInput = /** @class */ (function (_super) {
         var node = this.theInput.current;
         var selectionStart, selectionEnd;
         if (this.props.autoFocus) {
-            node.focus();
             // set cursor to end of input field excluding suffix
             selectionEnd = this.state.maskedValue.length - this.props.suffix.length;
             selectionStart = selectionEnd;
@@ -155,8 +155,8 @@ var CurrencyInput = /** @class */ (function (_super) {
      */
     CurrencyInput.prototype.componentDidUpdate = function (prevProps, prevState, snapshot) {
         if (snapshot !== null) {
-            this.inputSelectionStart = snapshot.selectionStart;
-            this.inputSelectionEnd = snapshot.selectionEnd;
+            this.inputSelectionStart = snapshot.inputSelectionStart;
+            this.inputSelectionEnd = snapshot.inputSelectionEnd;
         }
         var decimalSeparator = this.props.decimalSeparator;
         var node = this.theInput.current;
@@ -196,9 +196,20 @@ var CurrencyInput = /** @class */ (function (_super) {
      * @param end number
      */
     CurrencyInput.prototype.setSelectionRange = function (node, start, end) {
-        console.warn('* document.activeElement', document.activeElement);
+        if (!node) {
+            console.warn('* setSelectionRange: node is empty');
+            return;
+        }
+        if (isNaN(start) || isNaN(end)) {
+            console.warn('* setSelectionRange: received NaN!');
+            return;
+        }
         if (document.activeElement === node) {
+            console.warn('* setting selection range', start, end);
             node.setSelectionRange(start, end);
+        }
+        else {
+            console.warn('* setSelectionRange not activeElement!', document.activeElement, node);
         }
     };
     /**
@@ -221,6 +232,7 @@ var CurrencyInput = /** @class */ (function (_super) {
      * @param event
      */
     CurrencyInput.prototype.handleFocus = function (event) {
+        // console.warn('**** handleFocus called!', this.theInput.current);
         if (this.props.onFocus) {
             this.props.onFocus(event);
         }
@@ -237,8 +249,10 @@ var CurrencyInput = /** @class */ (function (_super) {
         this.inputSelectionEnd = selectionEnd;
     };
     CurrencyInput.prototype.handleBlur = function (event) {
-        this.inputSelectionStart = 0;
-        this.inputSelectionEnd = 0;
+        console.warn('**** handleBlur called');
+        if (this.props.onBlur) {
+            this.props.onBlur(event);
+        }
     };
     /**
      * Component lifecycle function.
@@ -246,7 +260,7 @@ var CurrencyInput = /** @class */ (function (_super) {
      * @see https://facebook.github.io/react/docs/component-specs.html#render
      */
     CurrencyInput.prototype.render = function () {
-        return (react_1.default.createElement("input", __assign({ ref: this.theInput, type: this.props.inputType, value: this.state.maskedValue, onChange: this.handleChangeEvent, onFocus: this.handleFocus, onMouseUp: this.handleFocus }, this.state.customProps, { style: this.props.style, onClick: this.props.onClick, onBlur: this.props.onBlur, id: this.props.id })));
+        return (react_1.default.createElement("input", __assign({ ref: this.theInput, type: this.props.inputType, value: this.state.maskedValue, onChange: this.handleChangeEvent, onFocus: this.handleFocus }, this.state.customProps, { style: this.props.style, onClick: this.props.onClick, onBlur: this.handleBlur, id: this.props.id, autoFocus: this.props.autoFocus, tabIndex: this.props.tabIndex })));
     };
     CurrencyInput.defaultProps = {
         onChangeEvent: function (event, maskedValue, value) { },

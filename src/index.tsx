@@ -1,4 +1,5 @@
 import React, { RefObject } from 'react';
+import { DOMElement } from 'react';
 import mask from './mask';
 
 export type CurrencyInputProps = {
@@ -51,6 +52,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         super(props);
         this.handleChangeEvent = this.handleChangeEvent.bind(this);
         this.handleFocus = this.handleFocus.bind(this);
+        this.handleBlur = this.handleBlur.bind(this);
         this.setSelectionRange = this.setSelectionRange.bind(this);
         this.state = CurrencyInput.prepareProps(props);
         this.theInput = React.createRef<HTMLInputElement>();
@@ -161,7 +163,6 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         let selectionStart, selectionEnd;
 
         if (this.props.autoFocus) {
-            console.warn('*** AUTOFOCUSING!');
             // set cursor to end of input field excluding suffix
             selectionEnd = this.state.maskedValue.length - this.props.suffix.length;
             selectionStart = selectionEnd;
@@ -196,15 +197,15 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      */
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (snapshot !== null) {
-            this.inputSelectionStart = snapshot.selectionStart;
-            this.inputSelectionEnd = snapshot.selectionEnd;
+            this.inputSelectionStart = snapshot.inputSelectionStart;
+            this.inputSelectionEnd = snapshot.inputSelectionEnd;
         }
 
         const { decimalSeparator } = this.props;
         const node = this.theInput.current;
         // let isNegative = (this.theInput.current.value.match(/-/g) || []).length % 2 === 1;
         let isNegative = (node.value.match(/-/g) || []).length % 2 === 1;
-        let minPos = this.props.prefix.length + (isNegative ? 1 : 0);
+        let minPos: number = this.props.prefix.length + (isNegative ? 1 : 0);
         // TODO: should this be this.state.value.length - this.props.suffix.length ?
         // TODO: also, we do this math in mount and in update, so we should DRY it up.
         let selectionEnd = Math.max(minPos, Math.min(this.inputSelectionEnd, node.value.length - this.props.suffix.length));
@@ -212,9 +213,9 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
 
         let regexEscapeRegex = /[-[\]{}()*+?.,\\^$|#\s]/g;
         let separatorsRegex = new RegExp(decimalSeparator.replace(regexEscapeRegex, '\\$&') + '|' + this.props.thousandSeparator.replace(regexEscapeRegex, '\\$&'), 'g');
-        let currSeparatorCount = (this.state.maskedValue.match(separatorsRegex) || []).length;
-        let prevSeparatorCount = (prevState.maskedValue.match(separatorsRegex) || []).length;
-        let adjustment = Math.max(currSeparatorCount - prevSeparatorCount, 0);
+        let currSeparatorCount: number = (this.state.maskedValue.match(separatorsRegex) || []).length;
+        let prevSeparatorCount: number = (prevState.maskedValue.match(separatorsRegex) || []).length;
+        let adjustment: number = Math.max(currSeparatorCount - prevSeparatorCount, 0);
 
         selectionEnd = selectionEnd + adjustment;
         selectionStart = selectionStart + adjustment;
@@ -244,10 +245,21 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      * @param start number
      * @param end number
      */
-    setSelectionRange(node, start, end) {
-      if (document.activeElement === node) {
-        node.setSelectionRange(start, end);
-      }
+    setSelectionRange(node: HTMLInputElement, start: number, end: number) {
+        if (!node) {
+            console.warn('* setSelectionRange: node is empty');
+            return;
+        }
+        if (isNaN(start) || isNaN(end)) {
+            console.warn('* setSelectionRange: received NaN!');
+            return;
+        }
+        if (document.activeElement === node) {
+            console.warn('* setting selection range', start, end);
+            node.setSelectionRange(start, end);
+        } else {
+            console.warn('* setSelectionRange not activeElement!', document.activeElement, node);
+        }
     }
 
 
@@ -280,7 +292,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      * @param event
      */
     handleFocus(event) {
-        console.warn('**** handleFocus called!', !!this.theInput.current);
+        // console.warn('**** handleFocus called!', this.theInput.current);
         if (this.props.onFocus) {
             this.props.onFocus(event);
         }

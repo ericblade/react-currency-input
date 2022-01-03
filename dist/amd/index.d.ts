@@ -6,9 +6,8 @@ declare module "mask" {
     };
 }
 declare module "index" {
-    import React from 'react';
-    import { RefObject } from 'react';
-    type CurrencyInputProps = {
+    import React, { RefObject } from 'react';
+    export type CurrencyInputProps = {
         onChangeEvent?: (event: Event, maskedValue: string, value: number | string) => void;
         onClick?: (event: Event) => void;
         onFocus?: (event: FocusEvent) => void;
@@ -26,6 +25,7 @@ declare module "index" {
         autoFocus?: boolean;
         style?: React.CSSProperties;
         id?: string;
+        tabIndex?: number;
     };
     type CurrencyInputState = {
         maskedValue: string;
@@ -100,7 +100,7 @@ declare module "index" {
          * @param start number
          * @param end number
          */
-        setSelectionRange(node: any, start: any, end: any): void;
+        setSelectionRange(node: HTMLInputElement, start: number, end: number): void;
         /**
          * onChange Event Handler
          * @param event
