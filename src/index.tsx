@@ -1,7 +1,7 @@
 import React, { RefObject } from 'react';
 import mask from './mask';
 
-type CurrencyInputProps = {
+export type CurrencyInputProps = {
     onChangeEvent?: (event: Event, maskedValue: string, value: number | string) => void,
     onClick?: (event: Event) => void,
     onFocus?: (event: FocusEvent) => void,
@@ -244,7 +244,6 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      * @param end number
      */
     setSelectionRange(node, start, end) {
-        console.warn('* document.activeElement', document.activeElement);
       if (document.activeElement === node) {
         node.setSelectionRange(start, end);
       }

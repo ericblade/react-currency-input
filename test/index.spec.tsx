@@ -5,8 +5,7 @@ import React from 'react'
 import chai, {expect} from 'chai'
 import sinon from 'sinon'
 import sinonChai from 'sinon-chai'
-import CurrencyInput from '../src/index'
-import ReactDOM from 'react-dom';
+import CurrencyInput, { CurrencyInputProps } from '../src/index'
 import ReactTestUtils from 'react-dom/test-utils';
 
 chai.use(sinonChai);
@@ -412,10 +411,11 @@ describe('react-currency-input', function(){
             onChangeEvent: () => {},
             value: '0',
             prefix: '$',
-            suffix: ' s'
+            suffix: ' s',
+            autoFocus: true,
         };
         let divElem;
-        let renderComponent = function(props = {}) {
+        let renderComponent = function(props: Partial<CurrencyInputProps> = {}) {
             divElem = document.createElement('div');
             document.body.appendChild(divElem);
 
@@ -455,22 +455,24 @@ describe('react-currency-input', function(){
             expect(inputComponent.selectionEnd).to.equal(2);
         });
 
-        it('should highlight number on focus', function() {
-            const { inputComponent } = renderComponent();
-            ReactTestUtils.Simulate.focus(inputComponent);
-            expect(inputComponent.selectionStart).to.equal(1);
-            expect(inputComponent.selectionEnd).to.equal(5);
-        });
+        describe('selection with selectAllOnFocus true', function() {
+            it('should highlight number on focus', function() {
+                const { inputComponent } = renderComponent({ selectAllOnFocus: true });
+                ReactTestUtils.Simulate.focus(inputComponent);
+                expect(inputComponent.selectionStart).to.equal(1);
+                expect(inputComponent.selectionEnd).to.equal(5);
+            });
 
-        it('should consider the negative sign when highlighting', function() {
-            const { inputComponent } = renderComponent();
+            it('should consider the negative sign when highlighting', function() {
+                const { inputComponent } = renderComponent({ selectAllOnFocus: true });
 
-            inputComponent.value = '-4.35';
-            ReactTestUtils.Simulate.change(inputComponent);
+                inputComponent.value = '-4.35';
+                ReactTestUtils.Simulate.change(inputComponent);
 
-            ReactTestUtils.Simulate.focus(inputComponent);
-            expect(inputComponent.selectionStart).to.equal(2);
-            expect(inputComponent.selectionEnd).to.equal(6);
+                ReactTestUtils.Simulate.focus(inputComponent);
+                expect(inputComponent.selectionStart).to.equal(2);
+                expect(inputComponent.selectionEnd).to.equal(6);
+            });
         });
 
         it('should adjust start/end by 1 when entering a number', function() {
