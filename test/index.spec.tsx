@@ -7,6 +7,7 @@ import sinon from 'sinon'
 import sinonChai from 'sinon-chai'
 import CurrencyInput, { CurrencyInputProps } from '../src/index'
 import ReactTestUtils from 'react-dom/test-utils';
+import { unmountComponentAtNode, findDOMNode } from 'react-dom';
 
 chai.use(sinonChai);
 
@@ -41,7 +42,7 @@ describe('react-currency-input', function(){
 
     describe('custom arguments', function(){
 
-        before('render and locate element', function() {
+        beforeEach('render and locate element', function() {
             this.renderedComponent = ReactTestUtils.renderIntoDocument<CurrencyInput>(
                 <CurrencyInput
                   decimalSeparator=","
@@ -50,13 +51,17 @@ describe('react-currency-input', function(){
                   value="123456789"
                   inputType="tel"
                   id="currencyInput"
-                  autoFocus={true} />
+                  autoFocus
+                />
             );
 
             this.inputComponent = ReactTestUtils.findRenderedDOMComponentWithTag(
                 this.renderedComponent,
                 'input'
             );
+        });
+        afterEach(function() {
+            unmountComponentAtNode(findDOMNode(this.renderedComponent).parentNode as Element);
         });
 
         it('<CurrencyInput> should have masked value of "123.456,789"', function() {
@@ -413,6 +418,7 @@ describe('react-currency-input', function(){
             prefix: '$',
             suffix: ' s',
             autoFocus: true,
+            tabIndex: 1,
         };
         let divElem;
         let renderComponent = function(props: Partial<CurrencyInputProps> = {}) {

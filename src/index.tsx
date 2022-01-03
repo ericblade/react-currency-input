@@ -19,6 +19,7 @@ export type CurrencyInputProps = {
     autoFocus?: boolean,
     style?: React.CSSProperties,
     id?: string,
+    tabIndex?: number,
 };
 
 type CurrencyInputState = {
@@ -160,7 +161,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         let selectionStart, selectionEnd;
 
         if (this.props.autoFocus) {
-            node.focus();
+            console.warn('*** AUTOFOCUSING!');
             // set cursor to end of input field excluding suffix
             selectionEnd = this.state.maskedValue.length - this.props.suffix.length;
             selectionStart = selectionEnd;
@@ -279,6 +280,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      * @param event
      */
     handleFocus(event) {
+        console.warn('**** handleFocus called!', !!this.theInput.current);
         if (this.props.onFocus) {
             this.props.onFocus(event);
         }
@@ -298,8 +300,10 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
 
 
     handleBlur(event) {
-        this.inputSelectionStart = 0;
-        this.inputSelectionEnd = 0;
+        console.warn('**** handleBlur called');
+        if (this.props.onBlur) {
+            this.props.onBlur(event);
+        }
     }
 
 
@@ -316,12 +320,14 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
                 value={this.state.maskedValue}
                 onChange={this.handleChangeEvent}
                 onFocus={this.handleFocus}
-                onMouseUp={this.handleFocus}
+                // onMouseUp={this.handleFocus}
                 {...this.state.customProps}
                 style={this.props.style}
                 onClick={this.props.onClick}
-                onBlur={this.props.onBlur}
+                onBlur={this.handleBlur}
                 id={this.props.id}
+                autoFocus={this.props.autoFocus}
+                tabIndex={this.props.tabIndex}
             />
         )
     }
