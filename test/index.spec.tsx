@@ -68,7 +68,7 @@ describe('react-currency-input', function(){
             expect(this.inputComponent.getAttribute('type')).to.equal('tel')
         });
 
-        it.skip('should be auto focused', function() { // may be a bug in jsdom ? test in browser when possible
+        it('should be auto focused', function() { // may be a bug in jsdom ? test in browser when possible
           var focusedElement = document.activeElement;
           expect(focusedElement.getAttribute('id')).to.equal("currencyInput");
         });
@@ -406,7 +406,7 @@ describe('react-currency-input', function(){
 
     });
 
-    describe.skip('input selection', function() { // TODO: This section is totally busted and I don't know why
+    describe('input selection', function() { // TODO: This section is totally busted and I don't know why
         let defaultProps = {
             allowNegative: true,
             onChangeEvent: () => {},
@@ -448,7 +448,7 @@ describe('react-currency-input', function(){
             expect((renderedComponent as unknown as CurrencyInput).getMaskedValue()).to.equal('$0.00 s');
         });
 
-        it.skip('should consider precision absence', function() { // TODO: I don't know why it should equal 2 but equals 4. What is this testing?
+        it('should consider precision absence', function() { // TODO: I don't know why it should equal 2 but equals 4. What is this testing?
             const { inputComponent } = renderComponent({ precision: 0 });
 
             expect(inputComponent.selectionStart).to.equal(2);
