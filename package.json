@@ -12,7 +12,7 @@
     "build:esm": "tsc --module es2015 --target es5 --outDir dist/esm",
     "build:cjs": "tsc --module commonjs --target es5 --outDir dist/cjs",
     "build-example": "browserify examples/index.js -o examples/bundle.js -t [ babelify --presets [ es2015 react ] ]",
-    "test": "npx cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json test/**/*.spec.{js,jsx,ts,tsx}",
+    "test": "npx cross-env NODE_ENV=test ts-mocha --exit -p tsconfig.test.json test/**/*.spec.{js,jsx,ts,tsx}",
     "webpack": "webpack",
     "webpack-dev": "webpack-dev-server"
   },

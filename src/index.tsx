@@ -4,52 +4,6 @@ import React, { Ref } from 'react'
 import ReactDOM from 'react-dom'
 import mask from './mask'
 
-class ErrorBoundary extends React.Component<any, { hasError: boolean }> {
-    constructor(props) {
-        super(props);
-        this.state = { hasError: false };
-    }
-
-    static getDerivedStateFromError(error) {
-        // Update state so the next render will show the fallback UI.
-        return { hasError: true };
-    }
-
-    componentDidCatch(error, errorInfo) {
-        // You can also log the error to an error reporting service
-        // logErrorToMyService(error, errorInfo);
-        console.warn('* error', error, errorInfo);
-    }
-
-    render() {
-        if (this.state.hasError) {
-            // You can render any custom fallback UI
-            return <h1>Something went wrong.</h1>;
-        }
-
-        return this.props.children;
-    }
-}
-// IE* parseFloat polyfill
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/parseFloat#Polyfill
-Number.parseFloat = parseFloat;
-
-/*
-CurrencyInput.defaultProps = {
-    onChange: function(maskValue, value, event) {},
-onChangeEvent: function(event, maskValue, value) {},
-autoFocus: false,
-    value: '0',
-        decimalSeparator: '.',
-            thousandSeparator: ',',
-                precision: '2',
-                    inputType: 'text',
-                        allowNegative: false,
-                            prefix: '',
-                                suffix: '',
-                                    selectAllOnFocus: false
-};
-*/
 type CurrencyInputProps = {
     onChange?: (maskedValue: string, value: number | string, event: Event) => void,
     onChangeEvent?: (event: Event, maskedValue: string, value: number | string) => void,
@@ -183,7 +137,8 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         return { maskedValue, value, customProps };
     }
 
-
+    // TODO: This function was definitely here for a reason, but converting it to the getDerivedState causes total failure of component.
+    // and willReceiveProps is going away. So, I'm commenting it out for now.
     /**
      * Component lifecycle function.
      * Invoked when a component is receiving new props. This method is not called for the initial render.
@@ -191,10 +146,11 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      * @param nextProps
      * @see https://facebook.github.io/react/docs/component-specs.html#updating-componentwillreceiveprops
      */
-    static getDerivedStateFromProps(nextProps) {
+/*     static getDerivedStateFromProps(nextProps) {
+        console.warn('* getDerivedStateFromProps', nextProps.value, nextProps.maskedValue);
         return CurrencyInput.prepareProps(nextProps);
     }
-
+ */
 
     /**
      * Component lifecycle function.
@@ -206,7 +162,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         let selectionStart, selectionEnd;
 
         if (this.props.autoFocus) {
-            // this.theInput.focus();
+            // (this.theInput as HTMLInputElement).focus();
             node.focus();
             selectionEnd = this.state.maskedValue.length - this.props.suffix.length;
             selectionStart = selectionEnd;
@@ -301,23 +257,23 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      * @param event
      */
     handleChangeEvent(event) {
-        event.preventDefault();
-        let { maskedValue, value } = mask(
-            event.target.value,
-            this.props.precision,
-            this.props.decimalSeparator,
-            this.props.thousandSeparator,
-            this.props.allowNegative,
-            this.props.prefix,
-            this.props.suffix
-        );
-
         event.persist();  // fixes issue #23
-
-        this.setState({ maskedValue, value }, () => {
-            this.props.onChange(maskedValue, value, event);
-            this.props.onChangeEvent(event, maskedValue, value);
-        });
+        event.preventDefault();
+        this.setState((prevState, props) => {
+            const { maskedValue, value } = mask(
+                event.target.value,
+                props.precision,
+                props.decimalSeparator,
+                props.thousandSeparator,
+                props.allowNegative,
+                props.prefix,
+                props.suffix,
+            );
+            return { maskedValue, value };
+        }, () => {
+            this.props.onChange(this.state.maskedValue, this.state.value, event);
+            this.props.onChangeEvent(event, this.state.maskedValue, this.state.value);
+        })
     }
 
 
@@ -352,17 +308,15 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      */
     render() {
         return (
-            <ErrorBoundary>
-                <input
-                    ref={(input) => { this.theInput = input; }}
-                    type={this.props.inputType}
-                    value={this.state.maskedValue}
-                    onChange={this.handleChangeEvent}
-                    onFocus={this.handleFocus}
-                    onMouseUp={this.handleFocus}
-                    {...this.state.customProps}
-                />
-            </ErrorBoundary>
+            <input
+                ref={(input) => { this.theInput = input; }}
+                type={this.props.inputType}
+                value={this.state.maskedValue}
+                onChange={this.handleChangeEvent}
+                onFocus={this.handleFocus}
+                onMouseUp={this.handleFocus}
+                {...this.state.customProps}
+            />
         )
     }
 }
