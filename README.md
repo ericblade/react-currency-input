@@ -1,12 +1,18 @@
-# react-currency-input
+# @ericblade/react-currency-input
 
-An ES2015 react component for currency. Supports custom decimal and thousand separators as well as precision.
+Modern React component for currency input. Fork from https://github.com/jsillitoe/react-currency-input
 
-[![Build Status](https://travis-ci.org/jsillitoe/react-currency-input.svg?branch=master)](https://travis-ci.org/jsillitoe/react-currency-input)
+Supports custom decimal and thousand separators as well as precision.
+
+Uniquely formats while inputting, including decimal and thousands separators, precision, prefixes and suffixes.  I have not found any other currency inputs that do this, and the original hasn't been touched for quite a long time, so that is why I fork this.
+
+NOTE: THIS IS NOT CURRENTLY IN WORKING CONDITION.  Just getting it to use modern tooling has been a bit of a chore.
+
+## Pre-fork README below
 
 ## Changes
 
-## v1.3.0:
+## v1.3.0
 
 - Deprecated "onChange" option in favor of "onChangeEvent". This fixes the argument order to better match React's default input handling
 - Updated dependencies to React 15
@@ -16,7 +22,7 @@ An ES2015 react component for currency. Supports custom decimal and thousand sep
 
 ## Installation
 
-```
+```bash
 npm install react-currency-input --save
 ```
 
@@ -122,7 +128,6 @@ All other attributes are applied to the input element. For example, you can inte
 Option            | Default Value | Description
 ----------------- | ------------- | -----------------------------------------------------------------------------
 value             | 0             | The initial currency value
-onChange          | n/a           | Callback function to handle value changes. Deprecated, use onChangeEvent.
 onChangeEvent     | n/a           | Callback function to handle value changes
 precision         | 2             | Number of digits after the decimal separator
 decimalSeparator  | '.'           | The decimal separator

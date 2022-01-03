@@ -2,7 +2,6 @@
   "name": "@ericblade/react-currency-input",
   "version": "1.0.0",
   "description": "React component for inputing currency amounts",
-  "browser": "dist/amd/index.js",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "scripts": {
