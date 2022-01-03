@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "jsx": "react",
         "module": "commonjs",
         "target": "es2015",
         "lib": [
@@ -9,10 +10,13 @@
         "noImplicitAny": false,
         "removeComments": true,
         "inlineSourceMap": true,
+        "esModuleInterop": true,
         "moduleResolution": "node"
     },
     "include": [
         "test/**/*.js",
-        "test/**/*.jsx"
+        "test/**/*.jsx",
+        "src/**/*.ts",
+        "src/**/*.tsx"
     ]
 }

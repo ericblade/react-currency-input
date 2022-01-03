@@ -1,10 +1,13 @@
 {
     "compilerOptions": {
+        "jsx": "react",
         "outDir": "./lib",
         "allowJs": true,
-        "target": "es5"
+        "target": "es5",
+        "esModuleInterop": true,
+        "lib": ["DOM", "ES5", "ES2015", "ES2016", "ES2017", "ES2018", "ESNext"],
     },
     "include": [
-        "./src/**/*"
+    "./src/**/*"
     ]
 }

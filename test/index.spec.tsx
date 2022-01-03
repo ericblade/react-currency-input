@@ -1,3 +1,4 @@
+import './setup';
 import React from 'react'
 import chai, {expect} from 'chai'
 import sinon from 'sinon'
@@ -5,15 +6,10 @@ import sinonChai from 'sinon-chai'
 import CurrencyInput from '../src/index'
 import ReactDOM from 'react-dom';
 import ReactTestUtils from 'react-dom/test-utils';
-import setup from './setup'
 
 chai.use(sinonChai);
 
 describe('react-currency-input', function(){
-
-    before('setup dom', function(){
-        setup(); // setup the jsdom
-    });
 
     describe('default arguments', function(){
 
@@ -410,7 +406,7 @@ describe('react-currency-input', function(){
     describe('input selection', function() {
         let defaultProps = {
             allowNegative: true,
-            handleChange: () => {},
+            onChangeEvent: () => {},
             value: '0',
             prefix: '$',
             suffix: ' s'

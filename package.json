@@ -12,7 +12,7 @@
     "build:esm": "tsc --module es2015 --target es5 --outDir dist/esm",
     "build:cjs": "tsc --module commonjs --target es5 --outDir dist/cjs",
     "build-example": "browserify examples/index.js -o examples/bundle.js -t [ babelify --presets [ es2015 react ] ]",
-    "test": "mocha -r esm -r ts-node/register test/**/*.ts test/**/*.tsx",
+    "test": "npx cross-env NODE_ENV=test ts-mocha -p tsconfig.test.json test/**/*.spec.{js,jsx,ts,tsx}",
     "webpack": "webpack",
     "webpack-dev": "webpack-dev-server"
   },
@@ -43,20 +43,22 @@
   "devDependencies": {
     "@types/chai": "^4.3.0",
     "@types/mocha": "^9.0.0",
+    "@types/react": "^17.0.38",
+    "@types/react-dom": "^17.0.11",
     "chai": "^3.5.0",
     "cross-env": "^5.1.0",
     "eslint": "^2.13.1",
-    "mocha": "^2.5.3",
     "rimraf": "^2.5.2",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0",
+    "ts-mocha": "^8.0.0",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.4"
   },
   "dependencies": {
-    "jsdom": "^9.12.0",
+    "jsdom": "^19.0.0",
     "prop-types": "^15.6.0",
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0"
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0"
   }
 }

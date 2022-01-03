@@ -1,22 +1,105 @@
 import './object-assign-polyfill';
 
-import PropTypes from 'prop-types';
-import React, { Component }  from 'react'
+import React, { Ref } from 'react'
 import ReactDOM from 'react-dom'
-import mask from './mask.js'
+import mask from './mask'
 
+class ErrorBoundary extends React.Component<any, { hasError: boolean }> {
+    constructor(props) {
+        super(props);
+        this.state = { hasError: false };
+    }
+
+    static getDerivedStateFromError(error) {
+        // Update state so the next render will show the fallback UI.
+        return { hasError: true };
+    }
+
+    componentDidCatch(error, errorInfo) {
+        // You can also log the error to an error reporting service
+        // logErrorToMyService(error, errorInfo);
+        console.warn('* error', error, errorInfo);
+    }
+
+    render() {
+        if (this.state.hasError) {
+            // You can render any custom fallback UI
+            return <h1>Something went wrong.</h1>;
+        }
+
+        return this.props.children;
+    }
+}
 // IE* parseFloat polyfill
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/parseFloat#Polyfill
 Number.parseFloat = parseFloat;
 
-class CurrencyInput extends Component {
-    constructor(props) {
+/*
+CurrencyInput.defaultProps = {
+    onChange: function(maskValue, value, event) {},
+onChangeEvent: function(event, maskValue, value) {},
+autoFocus: false,
+    value: '0',
+        decimalSeparator: '.',
+            thousandSeparator: ',',
+                precision: '2',
+                    inputType: 'text',
+                        allowNegative: false,
+                            prefix: '',
+                                suffix: '',
+                                    selectAllOnFocus: false
+};
+*/
+type CurrencyInputProps = {
+    onChange?: (maskedValue: string, value: number | string, event: Event) => void,
+    onChangeEvent?: (event: Event, maskedValue: string, value: number | string) => void,
+    value?: number | string,
+    decimalSeparator?: string,
+    thousandSeparator?: string,
+    precision?: number | string,
+    inputType?: string,
+    allowNegative?: boolean,
+    allowEmpty?: boolean,
+    prefix?: string,
+    suffix?: string,
+    selectAllOnFocus?: boolean,
+    autoFocus?: boolean,
+}
+
+type CurrencyInputState = {
+    maskedValue: string,
+    value: number | string,
+    customProps: any,
+}
+
+class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputState> {
+    static defaultProps = {
+        onChange: function(maskedValue, value, event) {},
+        onChangeEvent: function(event, maskedValue, value) {},
+        autoFocus: false,
+        value: '0',
+        decimalSeparator: '.',
+        thousandSeparator: ',',
+        precision: '2',
+        inputType: 'text',
+        allowNegative: false,
+        allowEmpty: false,
+        prefix: '',
+        suffix: '',
+        selectAllOnFocus: false,
+    }
+    inputSelectionStart: number;
+    inputSelectionEnd: number;
+    // theInput: Ref<HTMLInputElement>;
+    theInput: React.ReactInstance;
+
+    constructor(props: CurrencyInputProps) {
         super(props);
-        this.prepareProps = this.prepareProps.bind(this);
-        this.handleChange = this.handleChange.bind(this);
+        // this.prepareProps = this.prepareProps.bind(this);
+        this.handleChangeEvent = this.handleChangeEvent.bind(this);
         this.handleFocus = this.handleFocus.bind(this);
         this.setSelectionRange = this.setSelectionRange.bind(this);
-        this.state = this.prepareProps(this.props);
+        this.state = CurrencyInput.prepareProps(props);
 
         this.inputSelectionStart = 1;
         this.inputSelectionEnd = 1;
@@ -37,7 +120,7 @@ class CurrencyInput extends Component {
      * General function used to cleanup and define the final props used for rendering
      * @returns {{ maskedValue: {String}, value: {Number}, customProps: {Object} }}
      */
-    prepareProps(props) {
+    static prepareProps(props) {
         let customProps = {...props}; // babeljs converts to Object.assign, then polyfills.
         delete customProps.onChange;
         delete customProps.onChangeEvent;
@@ -108,8 +191,8 @@ class CurrencyInput extends Component {
      * @param nextProps
      * @see https://facebook.github.io/react/docs/component-specs.html#updating-componentwillreceiveprops
      */
-    componentWillReceiveProps(nextProps) {
-        this.setState(this.prepareProps(nextProps));
+    static getDerivedStateFromProps(nextProps) {
+        return CurrencyInput.prepareProps(nextProps);
     }
 
 
@@ -119,15 +202,17 @@ class CurrencyInput extends Component {
      * @see https://facebook.github.io/react/docs/react-component.html#componentdidmount
      */
     componentDidMount(){
-        let node = ReactDOM.findDOMNode(this.theInput);
+        let node = ReactDOM.findDOMNode(this.theInput) as HTMLInputElement;
         let selectionStart, selectionEnd;
 
         if (this.props.autoFocus) {
-            this.theInput.focus();
+            // this.theInput.focus();
+            node.focus();
             selectionEnd = this.state.maskedValue.length - this.props.suffix.length;
             selectionStart = selectionEnd;
         } else {
-            selectionEnd = Math.min(node.selectionEnd, this.theInput.value.length - this.props.suffix.length);
+            // selectionEnd = Math.min(node.selectionEnd, this.theInput.value.length - this.props.suffix.length);
+            selectionEnd = Math.min(node.selectionEnd, node.value.length - this.props.suffix.length);
             selectionStart = Math.min(node.selectionStart, selectionEnd);
         }
 
@@ -140,10 +225,12 @@ class CurrencyInput extends Component {
      * @returns {XML}
      * @see https://facebook.github.io/react/docs/react-component.html#componentwillupdate
      */
-    componentWillUpdate() {
-        let node = ReactDOM.findDOMNode(this.theInput);
-        this.inputSelectionStart = node.selectionStart;
-        this.inputSelectionEnd = node.selectionEnd;
+    getSnapshotBeforeUpdate(prevProps: Readonly<CurrencyInputProps>, prevState: Readonly<CurrencyInputState>) {
+        let node = ReactDOM.findDOMNode(this.theInput) as HTMLInputElement;
+        return {
+            inputSelectionStart: node.selectionStart,
+            inputSelectionEnd: node.selectionEnd,
+        };
     }
 
 
@@ -152,12 +239,19 @@ class CurrencyInput extends Component {
      * @returns {XML}
      * @see https://facebook.github.io/react/docs/react-component.html#componentdidupdate
      */
-    componentDidUpdate(prevProps, prevState){
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (snapshot !== null) {
+            this.inputSelectionStart = snapshot.selectionStart;
+            this.inputSelectionEnd = snapshot.selectionEnd;
+        }
+
         const { decimalSeparator } = this.props;
-        let node = ReactDOM.findDOMNode(this.theInput);
-        let isNegative = (this.theInput.value.match(/-/g) || []).length % 2 === 1;
+        let node = ReactDOM.findDOMNode(this.theInput) as HTMLInputElement;
+        // let isNegative = (this.theInput.value.match(/-/g) || []).length % 2 === 1;
+        let isNegative = (node.value.match(/-/g) || []).length % 2 === 1;
         let minPos = this.props.prefix.length + (isNegative ? 1 : 0);
-        let selectionEnd = Math.max(minPos, Math.min(this.inputSelectionEnd, this.theInput.value.length - this.props.suffix.length));
+        // let selectionEnd = Math.max(minPos, Math.min(this.inputSelectionEnd, this.theInput.value.length - this.props.suffix.length));
+        let selectionEnd = Math.max(minPos, Math.min(this.inputSelectionEnd, node.value.length - this.props.suffix.length));
         let selectionStart = Math.max(minPos, Math.min(this.inputSelectionEnd, selectionEnd));
 
         let regexEscapeRegex = /[-[\]{}()*+?.,\\^$|#\s]/g;
@@ -179,7 +273,8 @@ class CurrencyInput extends Component {
 
         if (this.state.maskedValue.length == baselength){
             // if we are already at base length, position the cursor at the end.
-            selectionEnd = this.theInput.value.length - this.props.suffix.length;
+            // selectionEnd = this.theInput.value.length - this.props.suffix.length;
+            selectionEnd = node.value.length - this.props.suffix.length;
             selectionStart = selectionEnd;
         }
 
@@ -205,7 +300,7 @@ class CurrencyInput extends Component {
      * onChange Event Handler
      * @param event
      */
-    handleChange(event) {
+    handleChangeEvent(event) {
         event.preventDefault();
         let { maskedValue, value } = mask(
             event.target.value,
@@ -232,10 +327,11 @@ class CurrencyInput extends Component {
      */
     handleFocus(event) {
         if (!this.theInput) return;
+        let node = ReactDOM.findDOMNode(this.theInput) as HTMLInputElement;
 
         //Whenever we receive focus check to see if the position is before the suffix, if not, move it.
-        let selectionEnd = this.theInput.value.length - this.props.suffix.length;
-        let isNegative = (this.theInput.value.match(/-/g) || []).length % 2 === 1;
+        let selectionEnd = node.value.length - this.props.suffix.length;
+        let isNegative = (node.value.match(/-/g) || []).length % 2 === 1;
         let selectionStart = this.props.prefix.length + (isNegative ? 1 : 0);
         this.props.selectAllOnFocus && event.target.setSelectionRange(selectionStart, selectionEnd);
         this.inputSelectionStart = selectionStart;
@@ -256,15 +352,17 @@ class CurrencyInput extends Component {
      */
     render() {
         return (
-            <input
-                ref={(input) => { this.theInput = input; }}
-                type={this.props.inputType}
-                value={this.state.maskedValue}
-                onChange={this.handleChange}
-                onFocus={this.handleFocus}
-                onMouseUp={this.handleFocus}
-                {...this.state.customProps}
-            />
+            <ErrorBoundary>
+                <input
+                    ref={(input) => { this.theInput = input; }}
+                    type={this.props.inputType}
+                    value={this.state.maskedValue}
+                    onChange={this.handleChangeEvent}
+                    onFocus={this.handleFocus}
+                    onMouseUp={this.handleFocus}
+                    {...this.state.customProps}
+                />
+            </ErrorBoundary>
         )
     }
 }
@@ -275,36 +373,5 @@ class CurrencyInput extends Component {
  * Prop validation.
  * @see https://facebook.github.io/react/docs/component-specs.html#proptypes
  */
-
-CurrencyInput.propTypes = {
-    onChange: PropTypes.func,
-    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    decimalSeparator: PropTypes.string,
-    thousandSeparator: PropTypes.string,
-    precision: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    inputType: PropTypes.string,
-    allowNegative: PropTypes.bool,
-    allowEmpty: PropTypes.bool,
-    prefix: PropTypes.string,
-    suffix: PropTypes.string,
-    selectAllOnFocus: PropTypes.bool
-};
-
-
-CurrencyInput.defaultProps = {
-    onChange: function(maskValue, value, event) {/*no-op*/},
-    onChangeEvent: function(event, maskValue, value) {/*no-op*/},
-    autoFocus: false,
-    value: '0',
-    decimalSeparator: '.',
-    thousandSeparator: ',',
-    precision: '2',
-    inputType: 'text',
-    allowNegative: false,
-    prefix: '',
-    suffix: '',
-    selectAllOnFocus: false
-};
-
 
 export default CurrencyInput
