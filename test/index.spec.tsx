@@ -68,7 +68,7 @@ describe('react-currency-input', function(){
             expect(this.inputComponent.getAttribute('type')).to.equal('tel')
         });
 
-        it('should be auto focused', function() { // may be a bug in jsdom ? test in browser when possible
+        it('should be auto focused', function() {
           var focusedElement = document.activeElement;
           expect(focusedElement.getAttribute('id')).to.equal("currencyInput");
         });

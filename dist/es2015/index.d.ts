@@ -1,4 +1,5 @@
 import React from 'react';
+import { RefObject } from 'react';
 declare type CurrencyInputProps = {
     onChangeEvent?: (event: Event, maskedValue: string, value: number | string) => void;
     onClick?: (event: Event) => void;
@@ -40,7 +41,7 @@ declare class CurrencyInput extends React.Component<CurrencyInputProps, Currency
     };
     inputSelectionStart: number;
     inputSelectionEnd: number;
-    theInput: React.ReactInstance;
+    theInput: RefObject<HTMLInputElement>;
     constructor(props: CurrencyInputProps);
     /**
      * Exposes the current masked value.

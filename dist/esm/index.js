@@ -25,17 +25,16 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 import React from 'react';
-import ReactDOM from 'react-dom';
 import mask from './mask';
 var CurrencyInput = /** @class */ (function (_super) {
     __extends(CurrencyInput, _super);
     function CurrencyInput(props) {
         var _this = _super.call(this, props) || this;
-        // this.prepareProps = this.prepareProps.bind(this);
         _this.handleChangeEvent = _this.handleChangeEvent.bind(_this);
         _this.handleFocus = _this.handleFocus.bind(_this);
         _this.setSelectionRange = _this.setSelectionRange.bind(_this);
         _this.state = CurrencyInput.prepareProps(props);
+        _this.theInput = React.createRef();
         _this.inputSelectionStart = 1;
         _this.inputSelectionEnd = 1;
         return _this;
@@ -117,16 +116,16 @@ var CurrencyInput = /** @class */ (function (_super) {
      * @see https://facebook.github.io/react/docs/react-component.html#componentdidmount
      */
     CurrencyInput.prototype.componentDidMount = function () {
-        var node = ReactDOM.findDOMNode(this.theInput);
+        var node = this.theInput.current;
         var selectionStart, selectionEnd;
         if (this.props.autoFocus) {
-            // (this.theInput as HTMLInputElement).focus();
             node.focus();
+            // set cursor to end of input field excluding suffix
             selectionEnd = this.state.maskedValue.length - this.props.suffix.length;
             selectionStart = selectionEnd;
         }
         else {
-            // selectionEnd = Math.min(node.selectionEnd, this.theInput.value.length - this.props.suffix.length);
+            // TODO: should this be this.state.value.length - this.props.suffix.length ?
             selectionEnd = Math.min(node.selectionEnd, node.value.length - this.props.suffix.length);
             selectionStart = Math.min(node.selectionStart, selectionEnd);
         }
@@ -138,7 +137,7 @@ var CurrencyInput = /** @class */ (function (_super) {
      * @see https://facebook.github.io/react/docs/react-component.html#componentwillupdate
      */
     CurrencyInput.prototype.getSnapshotBeforeUpdate = function (prevProps, prevState) {
-        var node = ReactDOM.findDOMNode(this.theInput);
+        var node = this.theInput.current;
         return {
             inputSelectionStart: node.selectionStart,
             inputSelectionEnd: node.selectionEnd,
@@ -155,11 +154,12 @@ var CurrencyInput = /** @class */ (function (_super) {
             this.inputSelectionEnd = snapshot.selectionEnd;
         }
         var decimalSeparator = this.props.decimalSeparator;
-        var node = ReactDOM.findDOMNode(this.theInput);
-        // let isNegative = (this.theInput.value.match(/-/g) || []).length % 2 === 1;
+        var node = this.theInput.current;
+        // let isNegative = (this.theInput.current.value.match(/-/g) || []).length % 2 === 1;
         var isNegative = (node.value.match(/-/g) || []).length % 2 === 1;
         var minPos = this.props.prefix.length + (isNegative ? 1 : 0);
-        // let selectionEnd = Math.max(minPos, Math.min(this.inputSelectionEnd, this.theInput.value.length - this.props.suffix.length));
+        // TODO: should this be this.state.value.length - this.props.suffix.length ?
+        // TODO: also, we do this math in mount and in update, so we should DRY it up.
         var selectionEnd = Math.max(minPos, Math.min(this.inputSelectionEnd, node.value.length - this.props.suffix.length));
         var selectionStart = Math.max(minPos, Math.min(this.inputSelectionEnd, selectionEnd));
         var regexEscapeRegex = /[-[\]{}()*+?.,\\^$|#\s]/g;
@@ -177,7 +177,6 @@ var CurrencyInput = /** @class */ (function (_super) {
             + 1; // This is to account for the default '0' value that comes before the decimal separator
         if (this.state.maskedValue.length == baselength) {
             // if we are already at base length, position the cursor at the end.
-            // selectionEnd = this.theInput.value.length - this.props.suffix.length;
             selectionEnd = node.value.length - this.props.suffix.length;
             selectionStart = selectionEnd;
         }
@@ -192,6 +191,7 @@ var CurrencyInput = /** @class */ (function (_super) {
      * @param end number
      */
     CurrencyInput.prototype.setSelectionRange = function (node, start, end) {
+        console.warn('* document.activeElement', document.activeElement);
         if (document.activeElement === node) {
             node.setSelectionRange(start, end);
         }
@@ -219,9 +219,10 @@ var CurrencyInput = /** @class */ (function (_super) {
         if (this.props.onFocus) {
             this.props.onFocus(event);
         }
-        if (!this.theInput)
+        var node = this.theInput.current;
+        if (!node) {
             return;
-        var node = ReactDOM.findDOMNode(this.theInput);
+        }
         //Whenever we receive focus check to see if the position is before the suffix, if not, move it.
         var selectionEnd = node.value.length - this.props.suffix.length;
         var isNegative = (node.value.match(/-/g) || []).length % 2 === 1;
@@ -240,8 +241,7 @@ var CurrencyInput = /** @class */ (function (_super) {
      * @see https://facebook.github.io/react/docs/component-specs.html#render
      */
     CurrencyInput.prototype.render = function () {
-        var _this = this;
-        return (React.createElement("input", __assign({ ref: function (input) { _this.theInput = input; }, type: this.props.inputType, value: this.state.maskedValue, onChange: this.handleChangeEvent, onFocus: this.handleFocus, onMouseUp: this.handleFocus }, this.state.customProps, { style: this.props.style, onClick: this.props.onClick, onBlur: this.props.onBlur, id: this.props.id })));
+        return (React.createElement("input", __assign({ ref: this.theInput, type: this.props.inputType, value: this.state.maskedValue, onChange: this.handleChangeEvent, onFocus: this.handleFocus, onMouseUp: this.handleFocus }, this.state.customProps, { style: this.props.style, onClick: this.props.onClick, onBlur: this.props.onBlur, id: this.props.id })));
     };
     CurrencyInput.defaultProps = {
         onChangeEvent: function (event, maskedValue, value) { },

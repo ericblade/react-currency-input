@@ -1,14 +1,13 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import mask from './mask';
 class CurrencyInput extends React.Component {
     constructor(props) {
         super(props);
-        // this.prepareProps = this.prepareProps.bind(this);
         this.handleChangeEvent = this.handleChangeEvent.bind(this);
         this.handleFocus = this.handleFocus.bind(this);
         this.setSelectionRange = this.setSelectionRange.bind(this);
         this.state = CurrencyInput.prepareProps(props);
+        this.theInput = React.createRef();
         this.inputSelectionStart = 1;
         this.inputSelectionEnd = 1;
     }
@@ -89,16 +88,16 @@ class CurrencyInput extends React.Component {
      * @see https://facebook.github.io/react/docs/react-component.html#componentdidmount
      */
     componentDidMount() {
-        let node = ReactDOM.findDOMNode(this.theInput);
+        const node = this.theInput.current;
         let selectionStart, selectionEnd;
         if (this.props.autoFocus) {
-            // (this.theInput as HTMLInputElement).focus();
             node.focus();
+            // set cursor to end of input field excluding suffix
             selectionEnd = this.state.maskedValue.length - this.props.suffix.length;
             selectionStart = selectionEnd;
         }
         else {
-            // selectionEnd = Math.min(node.selectionEnd, this.theInput.value.length - this.props.suffix.length);
+            // TODO: should this be this.state.value.length - this.props.suffix.length ?
             selectionEnd = Math.min(node.selectionEnd, node.value.length - this.props.suffix.length);
             selectionStart = Math.min(node.selectionStart, selectionEnd);
         }
@@ -110,7 +109,7 @@ class CurrencyInput extends React.Component {
      * @see https://facebook.github.io/react/docs/react-component.html#componentwillupdate
      */
     getSnapshotBeforeUpdate(prevProps, prevState) {
-        let node = ReactDOM.findDOMNode(this.theInput);
+        const node = this.theInput.current;
         return {
             inputSelectionStart: node.selectionStart,
             inputSelectionEnd: node.selectionEnd,
@@ -127,11 +126,12 @@ class CurrencyInput extends React.Component {
             this.inputSelectionEnd = snapshot.selectionEnd;
         }
         const { decimalSeparator } = this.props;
-        let node = ReactDOM.findDOMNode(this.theInput);
-        // let isNegative = (this.theInput.value.match(/-/g) || []).length % 2 === 1;
+        const node = this.theInput.current;
+        // let isNegative = (this.theInput.current.value.match(/-/g) || []).length % 2 === 1;
         let isNegative = (node.value.match(/-/g) || []).length % 2 === 1;
         let minPos = this.props.prefix.length + (isNegative ? 1 : 0);
-        // let selectionEnd = Math.max(minPos, Math.min(this.inputSelectionEnd, this.theInput.value.length - this.props.suffix.length));
+        // TODO: should this be this.state.value.length - this.props.suffix.length ?
+        // TODO: also, we do this math in mount and in update, so we should DRY it up.
         let selectionEnd = Math.max(minPos, Math.min(this.inputSelectionEnd, node.value.length - this.props.suffix.length));
         let selectionStart = Math.max(minPos, Math.min(this.inputSelectionEnd, selectionEnd));
         let regexEscapeRegex = /[-[\]{}()*+?.,\\^$|#\s]/g;
@@ -149,7 +149,6 @@ class CurrencyInput extends React.Component {
             + 1; // This is to account for the default '0' value that comes before the decimal separator
         if (this.state.maskedValue.length == baselength) {
             // if we are already at base length, position the cursor at the end.
-            // selectionEnd = this.theInput.value.length - this.props.suffix.length;
             selectionEnd = node.value.length - this.props.suffix.length;
             selectionStart = selectionEnd;
         }
@@ -164,6 +163,7 @@ class CurrencyInput extends React.Component {
      * @param end number
      */
     setSelectionRange(node, start, end) {
+        console.warn('* document.activeElement', document.activeElement);
         if (document.activeElement === node) {
             node.setSelectionRange(start, end);
         }
@@ -190,9 +190,10 @@ class CurrencyInput extends React.Component {
         if (this.props.onFocus) {
             this.props.onFocus(event);
         }
-        if (!this.theInput)
+        const node = this.theInput.current;
+        if (!node) {
             return;
-        let node = ReactDOM.findDOMNode(this.theInput);
+        }
         //Whenever we receive focus check to see if the position is before the suffix, if not, move it.
         let selectionEnd = node.value.length - this.props.suffix.length;
         let isNegative = (node.value.match(/-/g) || []).length % 2 === 1;
@@ -211,7 +212,7 @@ class CurrencyInput extends React.Component {
      * @see https://facebook.github.io/react/docs/component-specs.html#render
      */
     render() {
-        return (React.createElement("input", Object.assign({ ref: (input) => { this.theInput = input; }, type: this.props.inputType, value: this.state.maskedValue, onChange: this.handleChangeEvent, onFocus: this.handleFocus, onMouseUp: this.handleFocus }, this.state.customProps, { style: this.props.style, onClick: this.props.onClick, onBlur: this.props.onBlur, id: this.props.id })));
+        return (React.createElement("input", Object.assign({ ref: this.theInput, type: this.props.inputType, value: this.state.maskedValue, onChange: this.handleChangeEvent, onFocus: this.handleFocus, onMouseUp: this.handleFocus }, this.state.customProps, { style: this.props.style, onClick: this.props.onClick, onBlur: this.props.onBlur, id: this.props.id })));
     }
 }
 CurrencyInput.defaultProps = {

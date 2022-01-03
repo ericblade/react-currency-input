@@ -7,6 +7,7 @@ declare module "mask" {
 }
 declare module "index" {
     import React from 'react';
+    import { RefObject } from 'react';
     type CurrencyInputProps = {
         onChangeEvent?: (event: Event, maskedValue: string, value: number | string) => void;
         onClick?: (event: Event) => void;
@@ -48,7 +49,7 @@ declare module "index" {
         };
         inputSelectionStart: number;
         inputSelectionEnd: number;
-        theInput: React.ReactInstance;
+        theInput: RefObject<HTMLInputElement>;
         constructor(props: CurrencyInputProps);
         /**
          * Exposes the current masked value.
