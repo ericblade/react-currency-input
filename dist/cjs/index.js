@@ -111,11 +111,10 @@ var CurrencyInput = /** @class */ (function (_super) {
      * @param nextProps
      * @see https://facebook.github.io/react/docs/component-specs.html#updating-componentwillreceiveprops
      */
-    /*     static getDerivedStateFromProps(nextProps) {
-            console.warn('* getDerivedStateFromProps', nextProps.value, nextProps.maskedValue);
-            return CurrencyInput.prepareProps(nextProps);
-        }
-     */
+    // static getDerivedStateFromProps(nextProps) {
+    // console.warn('* getDerivedStateFromProps', nextProps.value, nextProps.maskedValue);
+    // return CurrencyInput.prepareProps(nextProps);
+    // }
     /**
      * Component lifecycle function.
      * @returns {XML}
@@ -211,6 +210,8 @@ var CurrencyInput = /** @class */ (function (_super) {
         else {
             console.warn('* setSelectionRange not activeElement!', document.activeElement, node);
         }
+        this.inputSelectionStart = start;
+        this.inputSelectionEnd = end;
     };
     /**
      * onChange Event Handler
