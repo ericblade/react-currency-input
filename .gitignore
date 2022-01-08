@@ -2,3 +2,5 @@
 node_modules/
 npm-debug.log
 coverage
+.dist/
+examples/bundle.js
