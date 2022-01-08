@@ -6,9 +6,7 @@ test/
 .npmignore
 .gitignore
 examples/
-.travis.yml
 .vscode/
 debug.log
-rollup.config.js
 tsconfig*.json
 webpack.config.js

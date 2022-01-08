@@ -256,11 +256,11 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         if (document.activeElement === node) {
             console.warn('* setting selection range', start, end);
             node.setSelectionRange(start, end);
+            this.inputSelectionStart = start;
+            this.inputSelectionEnd = end;
         } else {
-            console.warn('* setSelectionRange not activeElement!', document.activeElement, node);
+            // console.warn('* setSelectionRange not activeElement!', document.activeElement, node);
         }
-        this.inputSelectionStart = start;
-        this.inputSelectionEnd = end;
     }
 
 
