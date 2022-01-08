@@ -39,8 +39,8 @@
   },
   "homepage": "https://github.com/ericblade/react-currency-input#readme",
   "peerDependencies": {
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0"
+    "react": "^16.0.0||^17.0.0",
+    "react-dom": "^16.0.0||^17.0.0"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.7",
