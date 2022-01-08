@@ -6,7 +6,10 @@ Supports custom decimal and thousand separators as well as precision.
 
 Uniquely formats while inputting, including decimal and thousands separators, precision, prefixes and suffixes.  I have not found any other currency inputs that do this, and the original hasn't been touched for quite a long time, so that is why I fork this.
 
-NOTE: THIS IS NOT CURRENTLY IN WORKING CONDITION.  Just getting it to use modern tooling has been a bit of a chore.
+## Codepen Demonstration
+
+There is a CodePen available which you may use to see the component in action, and play with all of it's various parameters to see how it works.  It is written with React and TypeScript.
+[Codepen Link](https://codepen.io/ericblade/pen/NWaLbGK)
 
 ## Pre-fork README below
 
@@ -139,5 +142,11 @@ selectAllOnFocus  | false         | Selects all text on focus or does not
 prefix            | ''            | Currency prefix
 suffix            | ''            | Currency suffix
 autoFocus         | false         | Autofocus
+onClick           | none          | Passed through to input
+onFocus           | none          | Called after internal focus handling
+onBlur            | none          | Called after internal blur handling
+style             | none          | Passed through to input
+id                | none          | Passed through to input
+tabIndex          | none          | Passed through to input
 
 ***Note:** Enabling any mask-related features such as prefix, suffix or separators with an inputType="number" or "tel" could trigger errors. Most of those characters would be invalid in such input types.
