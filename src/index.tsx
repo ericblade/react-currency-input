@@ -77,7 +77,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      * @returns {{ maskedValue: {String}, value: {Number}, customProps: {Object} }}
      */
     static prepareProps(props) {
-        let customProps = {...props}; // babeljs converts to Object.assign, then polyfills.
+        let customProps = {...props};
         delete customProps.onChangeEvent;
         delete customProps.value;
         delete customProps.decimalSeparator;
@@ -93,9 +93,8 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
 
         let initialValue = props.value;
         if (initialValue === null) {
-            initialValue = props.allowEmpty? null : '';
-        }else{
-
+            initialValue = props.allowEmpty ? null : '';
+        } else {
             if (typeof initialValue == 'string') {
                 // Some people, when confronted with a problem, think "I know, I'll use regular expressions."
                 // Now they have two problems.
@@ -138,22 +137,29 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         return { maskedValue, value, customProps };
     }
 
-    // TODO: This function was definitely here for a reason, but converting it to the getDerivedState causes total failure of component.
-    // and willReceiveProps is going away. So, I'm commenting it out for now.
     /**
      * Component lifecycle function.
-     * Invoked when a component is receiving new props. This method is not called for the initial render.
+     * Invoked when a component is receiving new props.
+     * This is used to automatically update the value state if the props have changed --
+     * so changing the decimal separator on the fly will cause the value to be updated with the new
+     * separator.  Similarly, changing allowNegative on the fly will force the value to remove the
+     * negative sign.
      *
      * @param nextProps
-     * @see https://facebook.github.io/react/docs/component-specs.html#updating-componentwillreceiveprops
+     * @param prevState
+     * @see https://reactjs.org/docs/react-component.html#static-getderivedstatefromprops
      */
-    // static getDerivedStateFromProps(nextProps) {
-        // console.warn('* getDerivedStateFromProps', nextProps.value, nextProps.maskedValue);
-        // return CurrencyInput.prepareProps(nextProps);
-    // }
+    static getDerivedStateFromProps(nextProps, prevState) {
+        const props = { ...nextProps };
+        if (nextProps.value !== prevState.value) {
+            props.value = prevState.value;
+        }
+        return CurrencyInput.prepareProps(props);
+    }
 
     /**
      * Component lifecycle function.
+     * This function performs management of selection values.
      * @returns {XML}
      * @see https://facebook.github.io/react/docs/react-component.html#componentdidmount
      */
@@ -177,6 +183,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
 
     /**
      * Component lifecycle function
+     * This also performs management of selection values.
      * @returns {XML}
      * @see https://facebook.github.io/react/docs/react-component.html#componentwillupdate
      */
@@ -191,6 +198,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
 
     /**
      * Component lifecycle function.
+     * Also performs management of selection values
      * @returns {XML}
      * @see https://facebook.github.io/react/docs/react-component.html#componentdidupdate
      */
@@ -254,7 +262,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
             return;
         }
         if (document.activeElement === node) {
-            console.warn('* setting selection range', start, end);
+            // console.warn('* setting selection range', start, end);
             node.setSelectionRange(start, end);
             this.inputSelectionStart = start;
             this.inputSelectionEnd = end;
@@ -269,7 +277,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      * @param event
      */
     handleChangeEvent(event) {
-        event.persist();  // fixes issue #23
+        event.persist();  // fixes issue https://github.com/jsillitoe/react-currency-input/issues/23
         event.preventDefault();
         this.setState((prevState, props) => {
             const { maskedValue, value } = mask(
@@ -303,17 +311,19 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         }
 
         //Whenever we receive focus check to see if the position is before the suffix, if not, move it.
-        let selectionEnd = node.value.length - this.props.suffix.length;
+        const selectionEndMax = node.value.length - this.props.suffix.length;
         let isNegative = (node.value.match(/-/g) || []).length % 2 === 1;
-        let selectionStart = this.props.prefix.length + (isNegative ? 1 : 0);
-        this.props.selectAllOnFocus && event.target.setSelectionRange(selectionStart, selectionEnd);
-        this.inputSelectionStart = selectionStart;
-        this.inputSelectionEnd = selectionEnd;
+        const selectionStartMin = this.props.selectAllOnFocus ? this.props.prefix.length + (isNegative ? 1 : 0) : selectionEndMax;
+
+        this.setSelectionRange(node, selectionStartMin, selectionEndMax);
+        // I hate this hack. Chrome says this was fixed back in 2015, but it only seems to work when using a range, rather than a single location.
+        // what we are doing here, is setting it, then setting it again on the next tick, so that it remains set, instead of the browser resetting it.
+        setTimeout(() => { this.setSelectionRange(node, selectionStartMin, selectionEndMax); }, 0);
     }
 
 
     handleBlur(event) {
-        console.warn('**** handleBlur called');
+        // console.warn('**** handleBlur called');
         if (this.props.onBlur) {
             this.props.onBlur(event);
         }
