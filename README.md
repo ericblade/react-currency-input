@@ -6,10 +6,12 @@ Supports custom decimal and thousand separators as well as precision.
 
 Uniquely formats while inputting, including decimal and thousands separators, precision, prefixes and suffixes.  I have not found any other currency inputs that do this, and the original hasn't been touched for quite a long time, so that is why I fork this.
 
-## Codepen Demonstration
+## Codepen Demonstrations
 
 There is a CodePen available which you may use to see the component in action, and play with all of it's various parameters to see how it works.  It is written with React and TypeScript.
 [Codepen Link](https://codepen.io/ericblade/pen/NWaLbGK)
+
+There is a second CodePen, which mirrors the demonstration application in the "examples" directory here in the source: [Codepen Link](https://codepen.io/ericblade/pen/JjraWdG)
 
 ## Pre-fork README below
 
