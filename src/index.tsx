@@ -4,32 +4,35 @@ import React, { type RefObject } from 'react';
 import mask from './mask';
 
 export type CurrencyInputProps = {
+    onBlur?: (event: React.FocusEvent) => void,
     onChangeEvent?: (event: React.ChangeEvent, maskedValue: string, value: number | string) => void,
     onClick?: (event: Event) => void,
     onFocus?: (event: React.FocusEvent) => void,
-    onBlur?: (event: React.FocusEvent) => void,
-    value?: number | string,
-    decimalSeparator?: string,
-    thousandSeparator?: string,
-    precision?: number,
-    inputType?: string,
-    allowNegative?: boolean,
+
     allowEmpty?: boolean,
-    disableSelectionHandling?: boolean,
-    prefix?: string,
-    suffix?: string,
-    selectAllOnFocus?: boolean,
+    allowNegative?: boolean,
     autoFocus?: boolean,
+    disableSelectionHandling?: boolean,
+    selectAllOnFocus?: boolean,
+
+    decimalSeparator?: string,
+    inputType?: string,
+    precision?: number,
+    prefix?: string,
     style?: React.CSSProperties,
+    suffix?: string,
+    thousandSeparator?: string,
+
     id?: string,
     tabIndex?: number,
+    value?: number | string, // TODO: this should probably just be string? at least until we drive this thing by pennies.
 };
 
 type CurrencyInputState = {
+    customProps: any,
+    disableSelectionHandling: boolean,
     maskedValue: string,
     value: number | string, // TODO: should be string? should also have a separate float field for 'pennies'
-    disableSelectionHandling: boolean,
-    customProps: any,
 };
 
 type SelectionSnapshot = {
@@ -43,7 +46,7 @@ type SelectionConstraints = {
 };
 
 class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputState> {
-    static defaultProps = {
+    static defaultProps: CurrencyInputProps = {
         onChangeEvent: function(event: React.ChangeEvent<HTMLInputElement>, maskedValue: string, value: number) {},
         autoFocus: false,
         value: '0',
@@ -110,50 +113,50 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
 
     /**
      * General function used to cleanup and define the final props used for rendering
-     * @returns {{ maskedValue: {String}, value: {Number}, customProps: {Object} }}
+     * @returns CurrencyInputState
      */
-    static prepareProps(props: Readonly<CurrencyInputProps>) {
-        let customProps = {...props};
-        delete customProps.onChangeEvent;
-        delete customProps.value;
-        delete customProps.decimalSeparator;
-        delete customProps.thousandSeparator;
-        delete customProps.precision;
-        delete customProps.inputType;
-        delete customProps.allowNegative;
-        delete customProps.allowEmpty;
-        delete customProps.prefix;
-        delete customProps.suffix;
-        delete customProps.selectAllOnFocus;
-        delete customProps.autoFocus;
-        delete customProps.disableSelectionHandling;
-
-        let initialValue = props.value;
+    static prepareProps({
+        onChangeEvent,
+        value: propValue,
+        decimalSeparator,
+        thousandSeparator,
+        precision,
+        inputType,
+        allowNegative,
+        allowEmpty,
+        prefix,
+        suffix,
+        selectAllOnFocus,
+        autoFocus,
+        disableSelectionHandling: propDisableSelectionHandling,
+        ...customProps
+    }: Readonly<CurrencyInputProps>): CurrencyInputState {
+        let initialValue = propValue;
         if (initialValue === null) {
-            initialValue = props.allowEmpty ? null : '';
+            initialValue = allowEmpty ? null : '';
         } else {
             if (typeof initialValue == 'string') {
-                initialValue = this.stringValueToFloat(initialValue, props.thousandSeparator, props.decimalSeparator);
+                initialValue = this.stringValueToFloat(initialValue, thousandSeparator, decimalSeparator);
             }
             initialValue = Number(initialValue).toLocaleString(undefined, {
                 style                : 'decimal',
-                minimumFractionDigits: props.precision,
-                maximumFractionDigits: props.precision,
+                minimumFractionDigits: precision,
+                maximumFractionDigits: precision,
             })
 
         }
 
         const { maskedValue, value } = mask(
             initialValue,
-            props.precision,
-            props.decimalSeparator,
-            props.thousandSeparator,
-            props.allowNegative,
-            props.prefix,
-            props.suffix
+            precision,
+            decimalSeparator,
+            thousandSeparator,
+            allowNegative,
+            prefix,
+            suffix
         );
 
-        const disableSelectionHandling = props.disableSelectionHandling || props.inputType === 'number';
+        const disableSelectionHandling = propDisableSelectionHandling || inputType === 'number';
         return { maskedValue, value, customProps, disableSelectionHandling };
     }
 
