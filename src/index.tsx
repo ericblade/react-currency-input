@@ -48,23 +48,15 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         selectAllOnFocus: false,
         disableSelectionHandling: false,
     }
-    inputSelectionStart: number;
-    inputSelectionEnd: number;
-    theInput: RefObject<HTMLInputElement>;
+    inputSelectionStart: number = 1;
+    inputSelectionEnd: number = 1;
+    theInput: RefObject<HTMLInputElement> = React.createRef<HTMLInputElement>();
     static DEBUG_SELECTION = false;
 
     constructor(props: CurrencyInputProps) {
         super(props);
-        this.handleChangeEvent = this.handleChangeEvent.bind(this);
-        this.handleFocus = this.handleFocus.bind(this);
-        this.handleBlur = this.handleBlur.bind(this);
-        this.setSelectionRange = this.setSelectionRange.bind(this);
-        this.handleSelect = this.handleSelect.bind(this);
-        this.state = CurrencyInput.prepareProps(props);
-        this.theInput = React.createRef<HTMLInputElement>();
 
-        this.inputSelectionStart = 1;
-        this.inputSelectionEnd = 1;
+        this.state = CurrencyInput.prepareProps(props);
     }
 
 
@@ -77,7 +69,13 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         return this.state.maskedValue;
     }
 
-
+    /**
+     * Converts a string value with specified thousandSeparator and decimalSeparator into a plain
+     * Javascript string that looks like what the Javascript Number.parseFloat function can handle,
+     * and then calls Number.parseFloat on it, returning a float value.  This is a pretty gross
+     * thing to have to implement, but it came from the original code, and should be removed when
+     * we upgrade to handling all internal data in pennies.
+     */
     static stringValueToFloat(value: string, thousandSeparator: string, decimalSeparator: string) {
         // Some people, when confronted with a problem, think "I know, I'll use regular expressions."
         // Now they have two problems.
@@ -104,7 +102,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      * General function used to cleanup and define the final props used for rendering
      * @returns {{ maskedValue: {String}, value: {Number}, customProps: {Object} }}
      */
-    static prepareProps(props: CurrencyInputProps) {
+    static prepareProps(props: Readonly<CurrencyInputProps>) {
         let customProps = {...props};
         delete customProps.onChangeEvent;
         delete customProps.value;
@@ -161,7 +159,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      * @param prevState
      * @see https://reactjs.org/docs/react-component.html#static-getderivedstatefromprops
      */
-    static getDerivedStateFromProps(nextProps, prevState) {
+    static getDerivedStateFromProps(nextProps: Readonly<CurrencyInputProps>, prevState: Readonly<CurrencyInputState>) {
         const props = { ...nextProps };
         if (nextProps.value !== prevState.value) {
             props.value = prevState.value;
@@ -171,7 +169,14 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
 
     /**
      * Component lifecycle function
-     * This also performs management of selection values.
+     * Whenever the input field is updated (such as when a change is made, inputting a number), this
+     * will record the selectionStart and selectionEnd that was set before the update.  Similarly,
+     * when the selection is moved without causing an update (ie, cursor keys, or mouse clicking to
+     * change the caret position), that is handled in handleSelect.
+     *
+     * TODO: This piece may not actually be necessary with the re-written componentDidUpdate and
+     * handleSelect.  Should investigate removing it, and using this.theInput.current.selectionStart/selectionEnd
+     * rather than the snapshot data.
      * @returns {XML}
      * @see https://facebook.github.io/react/docs/react-component.html#componentwillupdate
      */
@@ -189,7 +194,14 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
 
     /**
      * Component lifecycle function.
-     * Also performs management of selection values
+     * Handles where the selection should be
+     * Basically: When an update happens from user input (ie adding or removing a number),
+     * we will receive that update, along with the previous properties, previous state, and the
+     * current state is available in this.state.  The previous caret selection is stored in inputSelectionStart
+     * and inputSelectionEnd.  If we know which way the caret moved (based on comparing inputSelectionEnd to the current selectionEnd)
+     * and whether we've added or removed numbers from the display, then we can determine where the
+     * selection *should* be placed, because we want this to behave like a proper money-input type field,
+     * and regular HTML inputs do *not* behave like that, so we have to manage the caret position entirely ourselves.
      * @returns {XML}
      * @see https://facebook.github.io/react/docs/react-component.html#componentdidupdate
      */
@@ -272,11 +284,12 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
 
     /**
      * Set selection range only if input is in focused state
+     * TODO: can probably reduce this to an external function removing the dependency on this
      * @param node DOMElement
      * @param start number
      * @param end number
      */
-    setSelectionRange(node: HTMLInputElement, start: number, end: number) {
+    setSelectionRange = (node: HTMLInputElement, start: number, end: number) => {
         if (this.state.disableSelectionHandling) {
             console.warn('* setSelectionRange disabled!');
             return;
@@ -302,9 +315,12 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
 
     /**
      * onChange Event Handler
+     * When the underlying input receives input, make sure that we update the internal state of this
+     * component, as well as notify any custom event handlers passed down to us, after the state has
+     * changed.
      * @param event
      */
-    handleChangeEvent(event) {
+    handleChangeEvent = (event) => {
         event.persist();  // fixes issue https://github.com/jsillitoe/react-currency-input/issues/23
         event.preventDefault();
         this.setState((prevState, props) => {
@@ -344,9 +360,11 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
 
     /**
      * onFocus Event Handler
+     * notify any onFocus events passed into is, and then ensure that the text caret remains within
+     * the correct bounds for this input.
      * @param event
      */
-    handleFocus(event) {
+    handleFocus = (event) => {
         event.persist();
         // console.warn('**** handleFocus called!', this.theInput.current);
         if (this.props.onFocus) {
@@ -371,7 +389,11 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         setTimeout(() => { this.setSelectionRange(node, selection.start, selection.end); }, 0);
     }
 
-    handleBlur(event) {
+    /*
+     * We don't do anything special currently with blur, but we do want to forward it onto any
+     * interested component that passed us an onBlur event
+     */
+    handleBlur = (event) => {
         event.persist();
         // console.warn('**** handleBlur called');
         if (this.props.onBlur) {
@@ -379,7 +401,10 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         }
     }
 
-    handleSelect(event) {
+    /**
+     * Ensure that selection remains within the minimum and maximum bounds at all times.
+     */
+    handleSelect = (event) => {
         if (this.state.disableSelectionHandling) {
             return;
         }
@@ -394,11 +419,6 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         }
     }
 
-    /**
-     * Component lifecycle function.
-     * @returns {XML}
-     * @see https://facebook.github.io/react/docs/component-specs.html#render
-     */
     render() {
         return (
             <input
@@ -422,6 +442,8 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
 }
 
 export default CurrencyInput;
+// TODO: quick way to enable/disable debugging on the fly, but should really be removed when we are
+// certain of stability.
 if (typeof 'window' !== 'undefined') {
     window['CurrencyInput'] = CurrencyInput;
 }
