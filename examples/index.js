@@ -7,6 +7,7 @@ import CurrencyInput from '../dist/cjs/index.js';
 const ExampleForm = ({
   allowNegative,
   allowEmpty,
+  disableSelectionHandling,
   selectAllOnFocus,
   value,
   decimalSeparator,
@@ -19,27 +20,24 @@ const ExampleForm = ({
 }) => {
   return (
     <form>
-      &lt;CurrencyInput allowNegative="
-      {document.getElementsByName("allowNegative")[0]?.checked ? "true" : "false"}"
-      allowEmpty="
-      {document.getElementsByName("allowEmpty")[0]?.checked ? "true" : "false"}"
-      selectAllOnFocus="
-      {document.getElementsByName("selectAllOnFocus")[0]?.checked
-        ? "true"
-        : "false"}
-      "{/* value="{document.getElementsByName('value')[0]?.value}" */}
-      decimalSeparator="{document.getElementsByName("decimalSeparator")[0]?.value}"
-      thousandSeparator="
-      {document.getElementsByName("thousandSeparator")[0]?.value}" precision="
-      {document.getElementsByName("precision")[0]?.value}" inputType="
-      {document.getElementsByName("inputType")[0]?.value}" prefix="
-      {document.getElementsByName("prefix")[0]?.value}" suffix="
-      {document.getElementsByName("suffix")[0]?.value}" /&gt;
+      &lt;CurrencyInput allowNegative="{document.getElementsByName("allowNegative")[0]?.checked ? "true" : "false"}"
+        allowEmpty="{document.getElementsByName("allowEmpty")[0]?.checked ? "true" : "false"}"
+        selectAllOnFocus="{document.getElementsByName("selectAllOnFocus")[0]?.checked ? "true" : "false"}"
+        disableSelectionHandling="{document.getElementsByName("disableSelectionHandling")[0]?.checked ? "true" : "false"}"
+        {/* value="{document.getElementsByName('value')[0]?.value}" */}
+        decimalSeparator="{document.getElementsByName("decimalSeparator")[0]?.value}"
+        thousandSeparator="{document.getElementsByName("thousandSeparator")[0]?.value}"
+        precision="{document.getElementsByName("precision")[0]?.value}"
+        inputType="{document.getElementsByName("inputType")[0]?.value}"
+        prefix="{document.getElementsByName("prefix")[0]?.value}"
+        suffix="{document.getElementsByName("suffix")[0]?.value}"
+      /&gt;
       <br />
       <CurrencyInput
         allowEmpty={allowEmpty}
         allowNegative={allowNegative}
         selectAllOnFocus={selectAllOnFocus}
+        disableSelectionHandling={disableSelectionHandling}
         value={value}
         decimalSeparator={decimalSeparator}
         thousandSeparator={thousandSeparator}
@@ -67,6 +65,8 @@ const ExampleForm = ({
         defaultChecked={selectAllOnFocus}
       />{" "}
       Select all on focus
+      <br />
+      <input type="checkbox" name="disableSelectionHandling" defaultChecked={disableSelectionHandling} /> Disable selection handling
       <br />
       {/* <input type="text" name="value" placeholder="Value" defaultValue={value} />Value<br /> */}
       <input
@@ -125,7 +125,8 @@ const ExampleForm = ({
 function FormContainer() {
   const [allowNegative, setAllowNegative] = useState(false);
   const [allowEmpty, setAllowEmpty] = useState(false);
-  const [selectAllOnFocus, setSelectAllOnFocus] = React.useState(false);
+  const [selectAllOnFocus, setSelectAllOnFocus] = useState(false);
+  const [disableSelectionHandling, setDisableSelectionHandling] = useState(false);
   const [value, setValue] = useState(0.0);
   const [decimalSeparator, setDecimalSeparator] = useState(".");
   const [thousandSeparator, setThousandSeparator] = useState(",");
@@ -158,6 +159,9 @@ function FormContainer() {
     setSelectAllOnFocus(
       document.getElementsByName("selectAllOnFocus")[0].checked
     );
+    setDisableSelectionHandling(
+      document.getElementsByName("disableSelectionHandling")[0].checked
+    );
     // setValue(document.getElementsByName('value')[0].value);
     setDecimalSeparator(document.getElementsByName("decimalSeparator")[0].value);
     setThousandSeparator(
@@ -175,6 +179,7 @@ function FormContainer() {
         allowNegative={allowNegative}
         allowEmpty={allowEmpty}
         selectAllOnFocus={selectAllOnFocus}
+        disableSelectionHandling={disableSelectionHandling}
         value={value}
         decimalSeparator={decimalSeparator}
         thousandSeparator={thousandSeparator}
