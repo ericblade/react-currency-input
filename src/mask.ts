@@ -22,7 +22,7 @@ export default function mask(
 
     value = String(value); //if the given value is a Number, let's convert into String to manipulate that
 
-    if (value.length == 0) {
+    if (value.length === 0) {
         return {
             value: 0,
             maskedValue: ''
@@ -66,17 +66,17 @@ export default function mask(
     digits = Number(digits.join('')).toFixed(precision).split('');
     let raw = Number(digits.join(''));
 
-    let decimalpos = digits.length - precision - 1;  // -1 needed to position the decimal separator before the digits.
+    let decimalPosition = digits.length - precision - 1;  // -1 needed to position the decimal separator before the digits.
     if (precision > 0) {
         // set the final decimal separator
-        digits[decimalpos] = decimalSeparator;
+        digits[decimalPosition] = decimalSeparator;
     } else {
         // when precision is 0, there is no decimal separator.
-        decimalpos = digits.length;
+        decimalPosition = digits.length;
     }
 
     // add in any thousand separators
-    for (let x=decimalpos - 3; x > 0; x = x - 3) {
+    for (let x=decimalPosition - 3; x > 0; x = x - 3) {
         digits.splice(x, 0, thousandSeparator);
     }
 

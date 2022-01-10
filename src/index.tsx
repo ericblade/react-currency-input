@@ -1,8 +1,6 @@
 // TODO: disableSelectionHandling really breaks behavior in a way i didn't even kind of expect, will try to figure out root cause later and fix if possible? that may be the way browser deals with it tho
-// TODO: backspace from > precision casues caret to move one space back :(
 
 import React, { RefObject } from 'react';
-import { DOMElement } from 'react';
 import mask from './mask';
 
 export type CurrencyInputProps = {
@@ -90,7 +88,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
             value = value.replace(/\./g, '');
         }
 
-        if (decimalSeparator != ".") {
+        if (decimalSeparator !== ".") {
             // fix the decimal separator
             value = value.replace(new RegExp(decimalSeparator, 'g'), '.');
         }
@@ -212,7 +210,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
 
         const { decimalSeparator } = this.props;
         const node = this.theInput.current;
-        if (this.inputSelectionStart == this.inputSelectionEnd) {
+        if (this.inputSelectionStart === this.inputSelectionEnd) {
             let selectionPosition = Math.max(selectionConstraints.start, Math.min(this.inputSelectionEnd, selectionConstraints.end));
             CurrencyInput.DEBUG_SELECTION && console.warn('* initial selectionPosition', selectionPosition);
             // if we erased digits, we shouldn't move the cursor, so adjust to compensate for the number of digits removed.
@@ -220,7 +218,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
             const currValueFloat = CurrencyInput.stringValueToFloat(String(this.state.value), this.props.thousandSeparator, this.props.decimalSeparator);
             CurrencyInput.DEBUG_SELECTION && console.warn('* value prev/now', prevValueFloat, currValueFloat);
 
-            const minimumLength = this.props.prefix.length + this.props.suffix.length + this.props.precision;
+            // const minimumLength = this.props.prefix.length + this.props.suffix.length + this.props.precision;
             const bDeletedDigits = ((prevSelectionEnd > this.inputSelectionEnd) && prevValueFloat > currValueFloat);
             const bAddedDigits = ((prevSelectionEnd < this.inputSelectionEnd) && prevValueFloat < currValueFloat);
             CurrencyInput.DEBUG_SELECTION && console.warn('* bDeletedDigits =', bDeletedDigits, 'bAddedDigits =', bAddedDigits);
@@ -269,7 +267,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
 
             selectionPosition = Math.max(selectionConstraints.start, Math.min(selectionPosition, selectionConstraints.end));
             this.setSelectionRange(node, selectionPosition, selectionPosition);
-        } // TODO: do we need to do anything with multiselect? probably just make sure the caret is still in proper constraints?
+        } // TODO: do we need to do anything with multi-select? probably just make sure the caret is still in proper constraints?
     }
 
     /**
@@ -390,7 +388,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         CurrencyInput.DEBUG_SELECTION && console.warn('**** handleSelect', event, node.selectionStart, node.selectionEnd, constraints);
         this.inputSelectionStart = Math.max(node.selectionStart, constraints.start);
         this.inputSelectionEnd = Math.max(constraints.start, Math.min(node.selectionEnd, constraints.end));
-        if (this.inputSelectionStart != node.selectionStart || this.inputSelectionEnd != node.selectionEnd) {
+        if (this.inputSelectionStart !== node.selectionStart || this.inputSelectionEnd !== node.selectionEnd) {
             CurrencyInput.DEBUG_SELECTION && console.warn('* resetting selection to', this.inputSelectionStart, this.inputSelectionEnd);
             this.setSelectionRange(node, this.inputSelectionStart, this.inputSelectionEnd);
         }
