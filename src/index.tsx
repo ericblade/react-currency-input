@@ -1,13 +1,13 @@
 // TODO: disableSelectionHandling really breaks behavior in a way i didn't even kind of expect, will try to figure out root cause later and fix if possible? that may be the way browser deals with it tho
 
-import React, { RefObject } from 'react';
+import React, { type RefObject } from 'react';
 import mask from './mask';
 
 export type CurrencyInputProps = {
-    onChangeEvent?: (event: Event, maskedValue: string, value: number | string) => void,
+    onChangeEvent?: (event: React.ChangeEvent, maskedValue: string, value: number | string) => void,
     onClick?: (event: Event) => void,
-    onFocus?: (event: FocusEvent) => void,
-    onBlur?: (event: FocusEvent) => void,
+    onFocus?: (event: React.FocusEvent) => void,
+    onBlur?: (event: React.FocusEvent) => void,
     value?: number | string,
     decimalSeparator?: string,
     thousandSeparator?: string,
@@ -32,9 +32,19 @@ type CurrencyInputState = {
     customProps: any,
 };
 
+type SelectionSnapshot = {
+    inputSelectionStart: number,
+    inputSelectionEnd: number,
+};
+
+type SelectionConstraints = {
+    start: number,
+    end: number,
+};
+
 class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputState> {
     static defaultProps = {
-        onChangeEvent: function(event, maskedValue, value) {},
+        onChangeEvent: function(event: React.ChangeEvent<HTMLInputElement>, maskedValue: string, value: number) {},
         autoFocus: false,
         value: '0',
         decimalSeparator: '.',
@@ -48,7 +58,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         selectAllOnFocus: false,
         disableSelectionHandling: false,
     }
-    inputSelectionStart: number = 1;
+    inputSelectionStart: number = 1; // TODO: can we upgrade to target es2015+ and use private fields here?
     inputSelectionEnd: number = 1;
     theInput: RefObject<HTMLInputElement> = React.createRef<HTMLInputElement>();
     static DEBUG_SELECTION = false;
@@ -180,7 +190,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      * @returns {XML}
      * @see https://facebook.github.io/react/docs/react-component.html#componentwillupdate
      */
-    getSnapshotBeforeUpdate(prevProps: Readonly<CurrencyInputProps>, prevState: Readonly<CurrencyInputState>) {
+    getSnapshotBeforeUpdate(prevProps: Readonly<CurrencyInputProps>, prevState: Readonly<CurrencyInputState>): SelectionSnapshot {
         if (prevState.disableSelectionHandling) {
             return null;
         }
@@ -205,7 +215,11 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      * @returns {XML}
      * @see https://facebook.github.io/react/docs/react-component.html#componentdidupdate
      */
-    componentDidUpdate(prevProps, prevState, snapshot) {
+    componentDidUpdate(
+        prevProps: Readonly<CurrencyInputProps>,
+        prevState: Readonly<CurrencyInputState>,
+        snapshot: Readonly<SelectionSnapshot>
+    ) {
         if (this.state.disableSelectionHandling) {
             return;
         }
@@ -320,7 +334,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      * changed.
      * @param event
      */
-    handleChangeEvent = (event) => {
+    handleChangeEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
         event.persist();  // fixes issue https://github.com/jsillitoe/react-currency-input/issues/23
         event.preventDefault();
         this.setState((prevState, props) => {
@@ -342,7 +356,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
     /*
      * Returns the minimum (start) and maximum (end) selection values, based on prefix, suffix, and negative status.
      */
-    getSelectionConstraints() {
+    getSelectionConstraints(): SelectionConstraints {
         const node = this.theInput.current;
         if (this.state.disableSelectionHandling) {
             return {
@@ -364,7 +378,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      * the correct bounds for this input.
      * @param event
      */
-    handleFocus = (event) => {
+    handleFocus = (event: React.FocusEvent) => {
         event.persist();
         // console.warn('**** handleFocus called!', this.theInput.current);
         if (this.props.onFocus) {
@@ -393,7 +407,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      * We don't do anything special currently with blur, but we do want to forward it onto any
      * interested component that passed us an onBlur event
      */
-    handleBlur = (event) => {
+    handleBlur = (event: React.FocusEvent) => {
         event.persist();
         // console.warn('**** handleBlur called');
         if (this.props.onBlur) {
@@ -404,7 +418,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
     /**
      * Ensure that selection remains within the minimum and maximum bounds at all times.
      */
-    handleSelect = (event) => {
+    handleSelect = (event: Event) => {
         if (this.state.disableSelectionHandling) {
             return;
         }
