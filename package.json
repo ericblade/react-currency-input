@@ -5,6 +5,7 @@
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "scripts": {
+    "audit": "npm audit fix --production",
     "lint": "eslint src/**",
     "build": "npm run build:es2015 && npm run build:esm && npm run build:cjs && npm run build:amd",
     "build:amd": "tsc --module amd --target es5 --outFile dist/amd/index.js",
@@ -12,7 +13,9 @@
     "build:esm": "tsc --module es2015 --target es5 --outDir dist/esm",
     "build:cjs": "tsc --module commonjs --target es5 --outDir dist/cjs",
     "build-example": "npm run build && browserify examples/index.js -o examples/bundle.js -t [ babelify --presets [ @babel/preset-env ] ]",
+    "prepublish": "npm run upgrade-deps && npm run audit",
     "test": "npx cross-env NODE_ENV=test ts-mocha --exit -p tsconfig.test.json test/**/*.spec.{js,jsx,ts,tsx}",
+    "upgrade-deps": "npx npm-check-updates -u && npm install",
     "webpack": "webpack",
     "webpack-dev": "webpack-dev-server"
   },
