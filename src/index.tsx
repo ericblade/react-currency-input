@@ -65,6 +65,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
     inputSelectionEnd: number = 1;
     theInput: RefObject<HTMLInputElement> = React.createRef<HTMLInputElement>();
     static DEBUG_SELECTION = false;
+    static DEBUG_FULL = false;
 
     constructor(props: CurrencyInputProps) {
         super(props);
@@ -251,7 +252,9 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
             const bDeletedDigits = ((prevSelectionEnd > this.inputSelectionEnd) && prevValueFloat > currValueFloat);
             const bAddedDigits = ((prevSelectionEnd < this.inputSelectionEnd) && prevValueFloat < currValueFloat);
             CurrencyInput.DEBUG_SELECTION && console.warn('* bDeletedDigits =', bDeletedDigits, 'bAddedDigits =', bAddedDigits);
-            if (currValueFloat === 0) {
+            if (currValueFloat === 0 || prevValueFloat === 0) {
+                // shortcut, when value is zero, we're always entering from the last position.
+                // If value was zero, we just entered the first number, so we should be at the end.
                 CurrencyInput.DEBUG_SELECTION && console.warn('* selection case 0');
                 selectionPosition = selectionConstraints.end;
             } else if (bDeletedDigits) {
@@ -340,6 +343,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
     handleChangeEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
         event.persist();  // fixes issue https://github.com/jsillitoe/react-currency-input/issues/23
         event.preventDefault();
+        CurrencyInput.DEBUG_FULL && console.log('* handleChangeEvent newValue=', event.target.value);
         this.setState((prevState, props) => {
             const { maskedValue, value } = mask(
                 event.target.value,
@@ -383,7 +387,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      */
     handleFocus = (event: React.FocusEvent) => {
         event.persist();
-        // console.warn('**** handleFocus called!', this.theInput.current);
+        CurrencyInput.DEBUG_FULL && console.log('* handleFocus');
         if (this.props.onFocus) {
             this.props.onFocus(event);
         }
@@ -412,7 +416,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      */
     handleBlur = (event: React.FocusEvent) => {
         event.persist();
-        // console.warn('**** handleBlur called');
+        CurrencyInput.DEBUG_FULL && console.log('* handleBlur');
         if (this.props.onBlur) {
             this.props.onBlur(event);
         }
@@ -421,13 +425,14 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
     /**
      * Ensure that selection remains within the minimum and maximum bounds at all times.
      */
-    handleSelect = (event: Event) => {
+    handleSelect = (event: React.SyntheticEvent<HTMLInputElement>) => {
         if (this.state.disableSelectionHandling) {
             return;
         }
+        CurrencyInput.DEBUG_FULL && console.log('* handleSelect', event);
         const node = this.theInput.current;
         const constraints = this.getSelectionConstraints();
-        CurrencyInput.DEBUG_SELECTION && console.warn('**** handleSelect', event, node.selectionStart, node.selectionEnd, constraints);
+        CurrencyInput.DEBUG_SELECTION && console.warn('**** handleSelect', node.selectionStart, node.selectionEnd, constraints);
         this.inputSelectionStart = Math.max(node.selectionStart, constraints.start);
         this.inputSelectionEnd = Math.max(constraints.start, Math.min(node.selectionEnd, constraints.end));
         if (this.inputSelectionStart !== node.selectionStart || this.inputSelectionEnd !== node.selectionEnd) {
