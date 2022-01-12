@@ -6,6 +6,7 @@
   "module": "dist/esm/index.js",
   "scripts": {
     "audit": "npm audit fix --production",
+    "cypress": "npm run build-example && cypress open",
     "lint": "eslint src/**",
     "build": "npm run build:es2015 && npm run build:esm && npm run build:cjs && npm run build:amd",
     "build:amd": "tsc --module amd --target es5 --outFile dist/amd/index.js",
@@ -58,6 +59,7 @@
     "browserify": "^17.0.0",
     "chai": "^4.3.4",
     "cross-env": "^7.0.3",
+    "cypress": "^9.2.1",
     "eslint": "^8.6.0",
     "eslint-config-react-app": "^7.0.0",
     "jsdom": "^14.0.0",

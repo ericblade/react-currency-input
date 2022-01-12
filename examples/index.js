@@ -45,6 +45,7 @@ const ExampleForm = ({
         inputType={inputType}
         prefix={prefix}
         suffix={suffix}
+        id="currency-input"
       />
       <br />
       Use the form below to change the parameters in the CurrencyInput above.

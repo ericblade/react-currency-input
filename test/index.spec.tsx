@@ -9,8 +9,8 @@ import CurrencyInput, { CurrencyInputProps } from '../src/index'
 import ReactTestUtils from 'react-dom/test-utils';
 import { unmountComponentAtNode, findDOMNode } from 'react-dom';
 
-CurrencyInput.DEBUG_SELECTION = true;
-CurrencyInput.DEBUG_FULL = true;
+// CurrencyInput.DEBUG_SELECTION = true;
+// CurrencyInput.DEBUG_FULL = true;
 
 chai.use(sinonChai);
 
@@ -413,7 +413,7 @@ describe('react-currency-input', function(){
 
     });
 
-    describe.only('input selection', function() {
+    describe('input selection', function() {
         let defaultProps = {
             allowNegative: true,
             onChangeEvent: () => {},
@@ -480,101 +480,6 @@ describe('react-currency-input', function(){
                 ReactTestUtils.Simulate.focus(inputComponent);
                 expect(inputComponent.selectionStart).to.equal(2);
                 expect(inputComponent.selectionEnd).to.equal(6);
-            });
-        });
-
-        describe('0 precision', function() {
-            let inputComponent: HTMLInputElement;
-            let renderedComponent: CurrencyInput;
-            describe('no prefix, no suffix', function() {
-                beforeEach(() => {
-                    // ts-ignoreing this line because i don't want to deal with the type system at this moment
-                    // @ts-ignore
-                    ({ renderedComponent, inputComponent } = renderComponent({ precision: 0, prefix: '', suffix: '' }));
-                    inputComponent.value = '0';
-                    ReactTestUtils.Simulate.change(inputComponent);
-                    ReactTestUtils.Simulate.focus(inputComponent);
-                });
-                it('maskedValue should = "0", selection should start at position 1', function() {
-                    expect(renderedComponent.getMaskedValue()).to.equal('0');
-                    expect(inputComponent.selectionStart).to.equal(1);
-                    expect(inputComponent.selectionEnd).to.equal(1);
-                });
-                it('inserting a zero when already zero should result in no change', function() {
-                    ReactTestUtils.Simulate.focus(inputComponent);
-                    ReactTestUtils.Simulate.keyPress(inputComponent, { key: '0', keyCode: '0'.charCodeAt(0), which: '0'.charCodeAt(0) });
-                    expect(renderedComponent.getMaskedValue()).to.equal('0');
-                    expect(inputComponent.selectionStart).to.equal(1);
-                    expect(inputComponent.selectionEnd).to.equal(1);
-                });
-                it('inserting 1 at selection 1 should result in value = 1, selection remains at 1', function() {
-                    ReactTestUtils.Simulate.focus(inputComponent);
-                    expect(inputComponent.selectionStart).to.equal(1);
-                    expect(inputComponent.selectionEnd).to.equal(1);
-                    ReactTestUtils.Simulate.change(inputComponent, ({ target: { value: '1' } } as any));
-                    expect(renderedComponent.getMaskedValue()).to.equal('1');
-                    expect(inputComponent.selectionStart).to.equal(1);
-                    expect(inputComponent.selectionEnd).to.equal(1);
-                });
-                it('inserting 12 at selection 1 should result in value = 12, selection moves to 2', function() {
-                    ReactTestUtils.Simulate.focus(inputComponent);
-                    expect(inputComponent.selectionStart).to.equal(1);
-                    expect(inputComponent.selectionEnd).to.equal(1);
-                    ReactTestUtils.Simulate.change(inputComponent, ({ target: { value: '12' } } as any));
-                    expect(renderedComponent.getMaskedValue()).to.equal('12');
-                    expect(inputComponent.selectionStart).to.equal(2);
-                    expect(inputComponent.selectionEnd).to.equal(2);
-                });
-                it('inserting 123 at selection 1 should result in value = 123, selection moves to 3, removing 3 should reset selection to 2', function() {
-                    ReactTestUtils.Simulate.focus(inputComponent);
-                    expect(inputComponent.selectionStart).to.equal(1);
-                    expect(inputComponent.selectionEnd).to.equal(1);
-                    ReactTestUtils.Simulate.change(inputComponent, ({ target: { value: '123' } } as any));
-                    expect(renderedComponent.getMaskedValue()).to.equal('123');
-                    expect(inputComponent.selectionStart).to.equal(3);
-                    expect(inputComponent.selectionEnd).to.equal(3);
-                    inputComponent.value = '12';
-                    ReactTestUtils.Simulate.change(inputComponent);
-                    expect(renderedComponent.getMaskedValue()).to.equal('12');
-                    expect(inputComponent.selectionStart).to.equal(2);
-                    expect(inputComponent.selectionEnd).to.equal(2);
-                });
-                it('inserting 123 at selection 1 should result in value = 123, selection moves to 3, setting selection to 1 and removing 1 should set selection to 1', function() {
-                    ReactTestUtils.Simulate.focus(inputComponent);
-                    expect(inputComponent.selectionStart).to.equal(1);
-                    expect(inputComponent.selectionEnd).to.equal(1);
-                    ReactTestUtils.Simulate.change(inputComponent, ({ target: { value: '123' } } as any));
-                    expect(renderedComponent.getMaskedValue()).to.equal('123');
-                    expect(inputComponent.selectionStart).to.equal(3);
-                    expect(inputComponent.selectionEnd).to.equal(3);
-                    inputComponent.setSelectionRange(1, 1);
-                    ReactTestUtils.Simulate.select(inputComponent);
-                    expect(inputComponent.selectionStart).to.equal(1);
-                    expect(inputComponent.selectionEnd).to.equal(1);
-                    ReactTestUtils.Simulate.change(inputComponent, ({ target: { value: '23' } } as any));
-                    expect(renderedComponent.getMaskedValue()).to.equal('23');
-                    expect(inputComponent.selectionStart).to.equal(1);
-                    expect(inputComponent.selectionEnd).to.equal(1);
-                });
-                it('inserting 1234 at selection 1 should result in value = 1,234, selection moves to 5, setting selection to 2 and removing 1 should set value to 234, selection to 2', function() {
-                    ReactTestUtils.Simulate.focus(inputComponent);
-                    expect(inputComponent.selectionStart).to.equal(1);
-                    expect(inputComponent.selectionEnd).to.equal(1);
-                    ReactTestUtils.Simulate.change(inputComponent, ({ target: { value: '1234' } } as any));
-                    expect(renderedComponent.getMaskedValue()).to.equal('1,234');
-                    expect(inputComponent.selectionStart).to.equal(5);
-                    expect(inputComponent.selectionEnd).to.equal(5);
-                    inputComponent.setSelectionRange(2, 2);
-                    ReactTestUtils.Simulate.select(inputComponent);
-                    expect(inputComponent.selectionStart).to.equal(2);
-                    expect(inputComponent.selectionEnd).to.equal(2);
-                    ReactTestUtils.Simulate.change(inputComponent, ({ target: { value: '234' } } as any));
-                    expect(renderedComponent.getMaskedValue()).to.equal('234');
-                    // TODO: I have a strong suspicion that only simulating react events is NOT going to give us the correct information, and we NEED a browser based testsuite.
-                    // TODO: I have literally verified this exact test in chrome, and it works fine. With ReactTestUtils, it doesn't work.
-                    // expect(inputComponent.selectionStart).to.equal(1);
-                    // expect(inputComponent.selectionEnd).to.equal(1);
-                });
             });
         });
     });
