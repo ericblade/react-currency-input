@@ -227,79 +227,32 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         if (this.state.disableSelectionHandling) {
             return;
         }
+        const node = this.theInput.current;
 
         let prevSelectionStart = this.inputSelectionStart;
         let prevSelectionEnd = this.inputSelectionEnd;
         if (snapshot !== null) {
             this.inputSelectionStart = snapshot.inputSelectionStart;
             this.inputSelectionEnd = snapshot.inputSelectionEnd;
-            // TODO: we should store the selection direction last moved, in node.selectionDirection, so we can investigate properly skipping separators in both directions.
         }
         const selectionConstraints = this.getSelectionConstraints();
-        CurrencyInput.DEBUG_SELECTION && console.warn('* componentDidUpdate inputSelection received', this.inputSelectionStart, this.inputSelectionEnd, selectionConstraints, prevSelectionStart, prevSelectionEnd);
+        CurrencyInput.DEBUG_SELECTION && console.warn('** componentDidUpdate inputSelection current selection = ', this.inputSelectionStart, this.inputSelectionEnd);
+        CurrencyInput.DEBUG_SELECTION && console.warn('* inputSelection previous selection = ', prevSelectionStart, prevSelectionEnd);
+        CurrencyInput.DEBUG_SELECTION && console.warn('* inputSelection constraints = ', selectionConstraints);
 
-        const { decimalSeparator } = this.props;
-        const node = this.theInput.current;
-        if (this.inputSelectionStart === this.inputSelectionEnd) {
-            let selectionPosition = Math.max(selectionConstraints.start, Math.min(this.inputSelectionEnd, selectionConstraints.end));
-            CurrencyInput.DEBUG_SELECTION && console.warn('* initial selectionPosition', selectionPosition);
-            // if we erased digits, we shouldn't move the cursor, so adjust to compensate for the number of digits removed.
-            const prevValueFloat = CurrencyInput.stringValueToFloat(String(prevState.value), this.props.thousandSeparator, this.props.decimalSeparator);
-            const currValueFloat = CurrencyInput.stringValueToFloat(String(this.state.value), this.props.thousandSeparator, this.props.decimalSeparator);
-            CurrencyInput.DEBUG_SELECTION && console.warn('* value prev/now', prevValueFloat, currValueFloat);
+        /*
+        const bCaretMovedLeft = this.inputSelectionEnd < prevSelectionEnd;
+        const bCaretMovedRight = this.inputSelectionEnd > prevSelectionEnd;
+        const bCaretDidNotMove = this.inputSelectionEnd === prevSelectionEnd;
+        */
 
-            // const minimumLength = this.props.prefix.length + this.props.suffix.length + this.props.precision;
-            const bDeletedDigits = ((prevSelectionEnd > this.inputSelectionEnd) && prevValueFloat > currValueFloat);
-            const bAddedDigits = ((prevSelectionEnd < this.inputSelectionEnd) && prevValueFloat < currValueFloat);
-            CurrencyInput.DEBUG_SELECTION && console.warn('* bDeletedDigits =', bDeletedDigits, 'bAddedDigits =', bAddedDigits);
-            if (currValueFloat === 0 || prevValueFloat === 0) {
-                // shortcut, when value is zero, we're always entering from the last position.
-                // If value was zero, we just entered the first number, so we should be at the end.
-                CurrencyInput.DEBUG_SELECTION && console.warn('* selection case 0');
-                selectionPosition = selectionConstraints.end;
-            } else if (bDeletedDigits) {
-                if (prevSelectionEnd > selectionConstraints.end) { // deleted from end
-                    CurrencyInput.DEBUG_SELECTION && console.warn('* selectionCase 1');
-                    selectionPosition = selectionConstraints.end;
-                    // if (String(prevValueFloat).length > String(currValueFloat).length) {
-                        // selectionPosition -= 1;
-                    // }
-                } else {
-                    if(String(prevValueFloat).length > String(currValueFloat).length) {
-                        CurrencyInput.DEBUG_SELECTION && console.warn('* selectionCase 2');
-                        selectionPosition = this.inputSelectionEnd;
-                    } else {
-                        CurrencyInput.DEBUG_SELECTION && console.warn('* selectionCase 3');
-                        selectionPosition = prevSelectionEnd;
-                    }
-                }
-            } else if (bAddedDigits) {
-                if (String(this.state.maskedValue).length === String(prevState.maskedValue).length) {
-                    CurrencyInput.DEBUG_SELECTION && console.warn('* selectionCase 4');
-                    selectionPosition = prevSelectionEnd;
-                } else {
-                    CurrencyInput.DEBUG_SELECTION && console.warn('* selectionCase 5');
-                    selectionPosition = this.inputSelectionEnd;
-                }
-            }
-            CurrencyInput.DEBUG_SELECTION && console.warn('* tentative selectionPosition=', selectionPosition);
+        const characterCountDifference = prevState.maskedValue.length - this.state.maskedValue.length;
 
-            let regexEscapeRegex = /[-[\]{}()*+?.,\\^$|#\s]/g;
-            let separatorsRegex = new RegExp(decimalSeparator.replace(regexEscapeRegex, '\\$&') + '|' + this.props.thousandSeparator.replace(regexEscapeRegex, '\\$&'), 'g');
-            let currSeparatorCount: number = (this.state.maskedValue.match(separatorsRegex) || []).length;
-            let prevSeparatorCount: number = (prevState.maskedValue.match(separatorsRegex) || []).length;
-            let adjustment: number = Math.abs(currSeparatorCount - prevSeparatorCount); //Math.max(currSeparatorCount - prevSeparatorCount, 0);
-            CurrencyInput.DEBUG_SELECTION && console.warn('* separator adjustment=', currSeparatorCount, prevSeparatorCount, adjustment);
-            // TODO: There is something going wrong here if you enter from the input end, 123456789 then cursor left one, then backspace. At that point, the adjustment should be ignored, but I can't figure out what criteria to hinge it upon.
-            if (bAddedDigits) {
-                selectionPosition += adjustment;
-            } else if (bDeletedDigits) {
-                selectionPosition -= adjustment;
-            }
-
-            selectionPosition = Math.max(selectionConstraints.start, Math.min(selectionPosition, selectionConstraints.end));
-            this.setSelectionRange(node, selectionPosition, selectionPosition);
-        } // TODO: do we need to do anything with multi-select? probably just make sure the caret is still in proper constraints?
+        let newSelection = prevSelectionEnd - characterCountDifference;
+        // console.warn('* ', bCaretMovedLeft, bCaretMovedRight, bCaretDidNotMove, characterCountDifference);
+        newSelection = Math.max(selectionConstraints.start, Math.min(newSelection, selectionConstraints.end));
+        this.setSelectionRange(node, newSelection, newSelection);
+        // TODO: using DEL instead of Backspace is a little wonky, but will save that for the future.
     }
 
     /**
