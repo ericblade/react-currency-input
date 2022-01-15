@@ -1,3 +1,6 @@
+// for some reason, visual studio isn't parsing the tsconfig.json in the cypress folder?
+/// <reference types="cypress" />
+
 describe('test', () => {
     beforeEach(() => {
         cy.visit('./examples/index.html');
@@ -115,16 +118,7 @@ describe('input caret selection', function() {
                 });
             });
             it('enter 123 then backspace once sets value to $0.12', () => {
-                cy.get('#currency-input').focus().wait(1).type('123').then((el) => {
-                    const input = el[0] as HTMLInputElement;
-                    const inputValue = input.value;
-                    const inputLength = inputValue.length;
-                    const inputSelectionStart = input.selectionStart;
-                    const inputSelectionEnd = input.selectionEnd;
-                    expect(inputSelectionStart).to.equal(inputLength - suffix.length);
-                    expect(inputSelectionEnd).to.equal(inputLength - suffix.length);
-                    expect(inputValue).to.equal(`${prefix}1.23${suffix}`);
-                }).type('{backspace}').then((el) => {
+                cy.get('#currency-input').focus().wait(1).type('123').type('{backspace}').then((el) => {
                     const input = el[0] as HTMLInputElement;
                     const inputValue = input.value;
                     const inputLength = inputValue.length;
@@ -136,16 +130,7 @@ describe('input caret selection', function() {
                 });
             });
             it('enter 123 then backspace twice sets value to $0.01', () => {
-                cy.get('#currency-input').focus().wait(1).type('123').then((el) => {
-                    const input = el[0] as HTMLInputElement;
-                    const inputValue = input.value;
-                    const inputLength = inputValue.length;
-                    const inputSelectionStart = input.selectionStart;
-                    const inputSelectionEnd = input.selectionEnd;
-                    expect(inputSelectionStart).to.equal(inputLength - suffix.length);
-                    expect(inputSelectionEnd).to.equal(inputLength - suffix.length);
-                    expect(inputValue).to.equal(`${prefix}1.23${suffix}`);
-                }).type('{backspace}').type('{backspace}').then((el) => {
+                cy.get('#currency-input').focus().wait(1).type('123').type('{backspace}').type('{backspace}').then((el) => {
                     const input = el[0] as HTMLInputElement;
                     const inputValue = input.value;
                     const inputLength = inputValue.length;
@@ -157,16 +142,7 @@ describe('input caret selection', function() {
                 });
             });
             it('enter 123 then backspace thrice sets value to $0.00', () => {
-                cy.get('#currency-input').focus().wait(1).type('123').then((el) => {
-                    const input = el[0] as HTMLInputElement;
-                    const inputValue = input.value;
-                    const inputLength = inputValue.length;
-                    const inputSelectionStart = input.selectionStart;
-                    const inputSelectionEnd = input.selectionEnd;
-                    expect(inputSelectionStart).to.equal(inputLength - suffix.length);
-                    expect(inputSelectionEnd).to.equal(inputLength - suffix.length);
-                    expect(inputValue).to.equal(`${prefix}1.23${suffix}`);
-                }).type('{backspace}').type('{backspace}').type('{backspace}').then((el) => {
+                cy.get('#currency-input').focus().wait(1).type('123').type('{backspace}').type('{backspace}').type('{backspace}').then((el) => {
                     const input = el[0] as HTMLInputElement;
                     const inputValue = input.value;
                     const inputLength = inputValue.length;
@@ -178,16 +154,7 @@ describe('input caret selection', function() {
                 });
             });
             it('enter 123 then left arrow then backspace sets value to $0.13 and leaves caret selection one left of end', () => {
-                cy.get('#currency-input').focus().wait(1).type('123').then((el) => {
-                    const input = el[0] as HTMLInputElement;
-                    const inputValue = input.value;
-                    const inputLength = inputValue.length;
-                    const inputSelectionStart = input.selectionStart;
-                    const inputSelectionEnd = input.selectionEnd;
-                    expect(inputSelectionStart).to.equal(inputLength - suffix.length);
-                    expect(inputSelectionEnd).to.equal(inputLength - suffix.length);
-                    expect(inputValue).to.equal(`${prefix}1.23${suffix}`);
-                }).type('{leftarrow}{backspace}').then((el) => {
+                cy.get('#currency-input').focus().wait(1).type('123').type('{leftarrow}').type('{backspace}').then((el) => {
                     const input = el[0] as HTMLInputElement;
                     const inputValue = input.value;
                     const inputLength = inputValue.length;
@@ -199,16 +166,7 @@ describe('input caret selection', function() {
                 });
             });
             it('enter 123 then left arrow then backspace twice sets value to $0.03 and leaves caret selection one left of end', () => {
-                cy.get('#currency-input').focus().wait(1).type('123').then((el) => {
-                    const input = el[0] as HTMLInputElement;
-                    const inputValue = input.value;
-                    const inputLength = inputValue.length;
-                    const inputSelectionStart = input.selectionStart;
-                    const inputSelectionEnd = input.selectionEnd;
-                    expect(inputSelectionStart).to.equal(inputLength - suffix.length);
-                    expect(inputSelectionEnd).to.equal(inputLength - suffix.length);
-                    expect(inputValue).to.equal(`${prefix}1.23${suffix}`);
-                }).type('{leftarrow}').type('{backspace}').type('{backspace}').then((el) => {
+                cy.get('#currency-input').focus().wait(1).type('123').type('{leftarrow}').type('{backspace}').type('{backspace}').then((el) => {
                     const input = el[0] as HTMLInputElement;
                     const inputValue = input.value;
                     const inputLength = inputValue.length;
@@ -220,7 +178,7 @@ describe('input caret selection', function() {
                 });
             });
             it('left arrow then enter 1 sets value to $0.10 and leaves caret selection one from end', () => {
-                cy.get('#currency-input').focus().wait(1).type('{leftarrow}1').then((el) => {
+                cy.get('#currency-input').focus().wait(1).type('{leftarrow}').type('1').then((el) => {
                     const input = el[0] as HTMLInputElement;
                     const inputValue = input.value;
                     const inputLength = inputValue.length;
@@ -232,7 +190,7 @@ describe('input caret selection', function() {
                 });
             });
             it('left arrow twice then enter 1 sets value to $1.00 and leaves caret selection 2 from end', () => {
-                cy.get('#currency-input').focus().wait(1).type('{leftarrow}{leftarrow}1').then((el) => {
+                cy.get('#currency-input').focus().wait(1).type('{leftarrow}').type('{leftarrow}').type('1').then((el) => {
                     const input = el[0] as HTMLInputElement;
                     const inputValue = input.value;
                     const inputLength = inputValue.length;
@@ -258,16 +216,7 @@ describe('input caret selection', function() {
                 });
             });
             it('enter 1234 then backspace from end sets value to $1.23 and leaves caret selection at end', () => {
-                cy.get('#currency-input').focus().wait(1).type('1234').then((el) => {
-                    const input = el[0] as HTMLInputElement;
-                    const inputValue = input.value;
-                    const inputLength = inputValue.length;
-                    const inputSelectionStart = input.selectionStart;
-                    const inputSelectionEnd = input.selectionEnd;
-                    expect(inputSelectionStart).to.equal(inputLength - suffix.length);
-                    expect(inputSelectionEnd).to.equal(inputLength - suffix.length);
-                    expect(inputValue).to.equal(`${prefix}12.34${suffix}`);
-                }).type('{backspace}').then((el) => {
+                cy.get('#currency-input').focus().wait(1).type('1234').type('{backspace}').then((el) => {
                     const input = el[0] as HTMLInputElement;
                     const inputValue = input.value;
                     const inputLength = inputValue.length;
@@ -279,16 +228,7 @@ describe('input caret selection', function() {
                 });
             });
             it('enter 1234 then backspace twice from end sets value to $0.12 and leaves caret selection at end', () => {
-                cy.get('#currency-input').focus().wait(1).type('1234').then((el) => {
-                    const input = el[0] as HTMLInputElement;
-                    const inputValue = input.value;
-                    const inputLength = inputValue.length;
-                    const inputSelectionStart = input.selectionStart;
-                    const inputSelectionEnd = input.selectionEnd;
-                    expect(inputSelectionStart).to.equal(inputLength - suffix.length);
-                    expect(inputSelectionEnd).to.equal(inputLength - suffix.length);
-                    expect(inputValue).to.equal(`${prefix}12.34${suffix}`);
-                }).type('{backspace}').type('{backspace}').then((el) => {
+                cy.get('#currency-input').focus().wait(1).type('1234').type('{backspace}').type('{backspace}').then((el) => {
                     const input = el[0] as HTMLInputElement;
                     const inputValue = input.value;
                     const inputLength = inputValue.length;
@@ -300,16 +240,7 @@ describe('input caret selection', function() {
                 });
             });
             it('enter 1234 then backspace thrice from end sets value to $0.01 and leaves caret selection at end', () => {
-                cy.get('#currency-input').focus().wait(1).type('1234').then((el) => {
-                    const input = el[0] as HTMLInputElement;
-                    const inputValue = input.value;
-                    const inputLength = inputValue.length;
-                    const inputSelectionStart = input.selectionStart;
-                    const inputSelectionEnd = input.selectionEnd;
-                    expect(inputSelectionStart).to.equal(inputLength - suffix.length);
-                    expect(inputSelectionEnd).to.equal(inputLength - suffix.length);
-                    expect(inputValue).to.equal(`${prefix}12.34${suffix}`);
-                }).type('{backspace}').type('{backspace}').type('{backspace}').then((el) => {
+                cy.get('#currency-input').focus().wait(1).type('1234').type('{backspace}').type('{backspace}').type('{backspace}').then((el) => {
                     const input = el[0] as HTMLInputElement;
                     const inputValue = input.value;
                     const inputLength = inputValue.length;
@@ -321,16 +252,7 @@ describe('input caret selection', function() {
                 });
             });
             it('enter 1234 then backspace four times from end sets value to $0.00 and leaves caret selection at end', () => {
-                cy.get('#currency-input').focus().wait(1).type('1234').then((el) => {
-                    const input = el[0] as HTMLInputElement;
-                    const inputValue = input.value;
-                    const inputLength = inputValue.length;
-                    const inputSelectionStart = input.selectionStart;
-                    const inputSelectionEnd = input.selectionEnd;
-                    expect(inputSelectionStart).to.equal(inputLength - suffix.length);
-                    expect(inputSelectionEnd).to.equal(inputLength - suffix.length);
-                    expect(inputValue).to.equal(`${prefix}12.34${suffix}`);
-                }).type('{backspace}').type('{backspace}').type('{backspace}').type('{backspace}').then((el) => {
+                cy.get('#currency-input').focus().wait(1).type('1234').type('{backspace}').type('{backspace}').type('{backspace}').type('{backspace}').then((el) => {
                     const input = el[0] as HTMLInputElement;
                     const inputValue = input.value;
                     const inputLength = inputValue.length;
@@ -342,16 +264,7 @@ describe('input caret selection', function() {
                 });
             });
             it('enter 1234 then leftarrow then backspace sets value to $1.24 and leaves caret selection at 1 before end', () => {
-                cy.get('#currency-input').focus().wait(1).type('1234').then((el) => {
-                    const input = el[0] as HTMLInputElement;
-                    const inputValue = input.value;
-                    const inputLength = inputValue.length;
-                    const inputSelectionStart = input.selectionStart;
-                    const inputSelectionEnd = input.selectionEnd;
-                    expect(inputSelectionStart).to.equal(inputLength - suffix.length);
-                    expect(inputSelectionEnd).to.equal(inputLength - suffix.length);
-                    expect(inputValue).to.equal(`${prefix}12.34${suffix}`);
-                }).type('{leftarrow}{backspace}').then((el) => {
+                cy.get('#currency-input').focus().wait(1).type('1234').type('{leftarrow}').type('{backspace}').then((el) => {
                     const input = el[0] as HTMLInputElement;
                     const inputValue = input.value;
                     const inputLength = inputValue.length;
@@ -363,16 +276,7 @@ describe('input caret selection', function() {
                 });
             });
             it('enter 1234 then leftarrow then backspace twice sets value to $0.14 and leaves caret selection at 1 before end', () => {
-                cy.get('#currency-input').focus().wait(1).type('1234').then((el) => {
-                    const input = el[0] as HTMLInputElement;
-                    const inputValue = input.value;
-                    const inputLength = inputValue.length;
-                    const inputSelectionStart = input.selectionStart;
-                    const inputSelectionEnd = input.selectionEnd;
-                    expect(inputSelectionStart).to.equal(inputLength - suffix.length);
-                    expect(inputSelectionEnd).to.equal(inputLength - suffix.length);
-                    expect(inputValue).to.equal(`${prefix}12.34${suffix}`);
-                }).type('{leftarrow}').type('{backspace}').type('{backspace}').then((el) => {
+                cy.get('#currency-input').focus().wait(1).type('1234').type('{leftarrow}').type('{backspace}').type('{backspace}').then((el) => {
                     const input = el[0] as HTMLInputElement;
                     const inputValue = input.value;
                     const inputLength = inputValue.length;
@@ -399,16 +303,7 @@ describe('input caret selection', function() {
             });
             // TODO: THIS TEST FAILS, THE CURSOR MOVES ONE SPOT BACKWARDS WHEN WE DELETE THE THOUSANDS SEPARATOR
             it('enter 123456 then backspace sets value to $123.45 and leaves caret selection at end', () => {
-                cy.get('#currency-input').focus().wait(1).type('123456').then((el) => {
-                    const input = el[0] as HTMLInputElement;
-                    const inputValue = input.value;
-                    const inputLength = inputValue.length;
-                    const inputSelectionStart = input.selectionStart;
-                    const inputSelectionEnd = input.selectionEnd;
-                    // expect(inputSelectionStart).to.equal(inputLength - suffix.length);
-                    // expect(inputSelectionEnd).to.equal(inputLength - suffix.length);
-                    // expect(inputValue).to.equal(`${prefix}1,234.56${suffix}`);
-                }).type('{backspace}').then((el) => {
+                cy.get('#currency-input').focus().wait(1).type('123456').type('{backspace}').then((el) => {
                     const input = el[0] as HTMLInputElement;
                     const inputValue = input.value;
                     const inputLength = inputValue.length;
@@ -421,16 +316,7 @@ describe('input caret selection', function() {
             });
             // TODO: THIS TEST FAILS BECAUSE OF THE PREVIOUS ISSUE, WHICH LEAVES US WITH AN INCORRECT RESULT AT THE END.
             it('enter 123456 then backspace twice sets value to $12.34 and leaves caret selection at end', () => {
-                cy.get('#currency-input').focus().wait(1).type('123456').then((el) => {
-                    const input = el[0] as HTMLInputElement;
-                    const inputValue = input.value;
-                    const inputLength = inputValue.length;
-                    const inputSelectionStart = input.selectionStart;
-                    const inputSelectionEnd = input.selectionEnd;
-                    // expect(inputSelectionStart).to.equal(inputLength - suffix.length);
-                    // expect(inputSelectionEnd).to.equal(inputLength - suffix.length);
-                    // expect(inputValue).to.equal(`${prefix}1,234.56${suffix}`);
-                }).type('{backspace}').type('{backspace}').then((el) => {
+                cy.get('#currency-input').focus().wait(1).type('123456').type('{backspace}').type('{backspace}').then((el) => {
                     const input = el[0] as HTMLInputElement;
                     const inputValue = input.value;
                     const inputLength = inputValue.length;
@@ -442,16 +328,7 @@ describe('input caret selection', function() {
                 });
             });
             it('enter 123456 then left backspace sets value to $123.46 and leaves caret selection at 1 before end', () => {
-                cy.get('#currency-input').focus().wait(1).type('123456').then((el) => {
-                    const input = el[0] as HTMLInputElement;
-                    const inputValue = input.value;
-                    const inputLength = inputValue.length;
-                    const inputSelectionStart = input.selectionStart;
-                    const inputSelectionEnd = input.selectionEnd;
-                    // expect(inputSelectionStart).to.equal(inputLength - suffix.length);
-                    // expect(inputSelectionEnd).to.equal(inputLength - suffix.length);
-                    // expect(inputValue).to.equal(`${prefix}1,234.56${suffix}`);
-                }).type('{leftarrow}{backspace}').then((el) => {
+                cy.get('#currency-input').focus().wait(1).type('123456').type('{leftarrow}').type('{backspace}').then((el) => {
                     const input = el[0] as HTMLInputElement;
                     const inputValue = input.value;
                     const inputLength = inputValue.length;
@@ -463,16 +340,7 @@ describe('input caret selection', function() {
                 });
             });
             it('enter 123456 then left backspace twice sets value to $12.36 and leaves caret selection at 1 before end', () => {
-                cy.get('#currency-input').focus().wait(1).type('123456').then((el) => {
-                    const input = el[0] as HTMLInputElement;
-                    const inputValue = input.value;
-                    const inputLength = inputValue.length;
-                    const inputSelectionStart = input.selectionStart;
-                    const inputSelectionEnd = input.selectionEnd;
-                    // expect(inputSelectionStart).to.equal(inputLength - suffix.length);
-                    // expect(inputSelectionEnd).to.equal(inputLength - suffix.length);
-                    // expect(inputValue).to.equal(`${prefix}1,234.56${suffix}`);
-                }).type('{leftarrow}').type('{backspace}').type('{backspace}').then((el) => {
+                cy.get('#currency-input').focus().wait(1).type('123456').type('{leftarrow}').type('{backspace}').type('{backspace}').then((el) => {
                     const input = el[0] as HTMLInputElement;
                     const inputValue = input.value;
                     const inputLength = inputValue.length;
