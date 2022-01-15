@@ -301,7 +301,6 @@ describe('input caret selection', function() {
                     expect(inputValue).to.equal(`${prefix}1,234.56${suffix}`);
                 });
             });
-            // TODO: THIS TEST FAILS, THE CURSOR MOVES ONE SPOT BACKWARDS WHEN WE DELETE THE THOUSANDS SEPARATOR
             it('enter 123456 then backspace sets value to $123.45 and leaves caret selection at end', () => {
                 cy.get('#currency-input').focus().wait(1).type('123456').type('{backspace}').then((el) => {
                     const input = el[0] as HTMLInputElement;
@@ -314,7 +313,6 @@ describe('input caret selection', function() {
                     expect(inputValue).to.equal(`${prefix}123.45${suffix}`);
                 });
             });
-            // TODO: THIS TEST FAILS BECAUSE OF THE PREVIOUS ISSUE, WHICH LEAVES US WITH AN INCORRECT RESULT AT THE END.
             it('enter 123456 then backspace twice sets value to $12.34 and leaves caret selection at end', () => {
                 cy.get('#currency-input').focus().wait(1).type('123456').type('{backspace}').type('{backspace}').then((el) => {
                     const input = el[0] as HTMLInputElement;
