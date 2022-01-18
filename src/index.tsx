@@ -1,6 +1,7 @@
 // TODO: disableSelectionHandling really breaks behavior in a way i didn't even kind of expect, will try to figure out root cause later and fix if possible? that may be the way browser deals with it tho
 
 import React, { type RefObject } from 'react';
+import { isAndroid, isChrome } from 'react-device-detect';
 import mask from './mask';
 
 export type CurrencyInputProps = {
@@ -247,10 +248,13 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         */
 
         const characterCountDifference = prevState.maskedValue.length - this.state.maskedValue.length;
+        CurrencyInput.DEBUG_SELECTION && console.warn('* characterCountDifference = ', characterCountDifference);
 
         let newSelection = prevSelectionEnd - characterCountDifference;
+        CurrencyInput.DEBUG_SELECTION && console.warn('* newSelection = ', newSelection);
         // console.warn('* ', bCaretMovedLeft, bCaretMovedRight, bCaretDidNotMove, characterCountDifference);
         newSelection = Math.max(selectionConstraints.start, Math.min(newSelection, selectionConstraints.end));
+
         this.setSelectionRange(node, newSelection, newSelection);
         // TODO: using DEL instead of Backspace is a little wonky, but will save that for the future.
     }
@@ -280,6 +284,12 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
             node.setSelectionRange(start, end);
             this.inputSelectionStart = start;
             this.inputSelectionEnd = end;
+            if (isAndroid) {
+                CurrencyInput.DEBUG_SELECTION && console.warn('* Android detected, fixing selection next tick');
+                setTimeout(() => {
+                    node.setSelectionRange(start, end);
+                }, 0);
+            }
         } else {
             // console.warn('* setSelectionRange not activeElement!', document.activeElement, node);
         }
@@ -360,7 +370,9 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         this.setSelectionRange(node, selection.start, selection.end);
         // I hate this hack. Chrome says this was fixed back in 2015, but it only seems to work when using a range, rather than a single location.
         // what we are doing here, is setting it, then setting it again on the next tick, so that it remains set, instead of the browser resetting it.
-        setTimeout(() => { this.setSelectionRange(node, selection.start, selection.end); }, 0);
+        if (isChrome) {
+            setTimeout(() => { this.setSelectionRange(node, selection.start, selection.end); }, 0);
+        }
     }
 
     /*
