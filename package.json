@@ -73,5 +73,12 @@
   },
   "dependencies": {
     "react-device-detect": "^2.1.2"
+  },
+  "@rollingversions": {
+    "versioningMode": "ALWAYS_INCREASING",
+    "versioning": "ALWAYS_INCREASING"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
