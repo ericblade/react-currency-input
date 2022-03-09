@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import CurrencyInput from '../dist/cjs/index.js';
 
@@ -197,4 +197,6 @@ function FormContainer() {
     </div>
   );
 }
-ReactDOM.render(<FormContainer />, document.querySelector("#main"));
+const container = document.querySelector('#main');
+const root = createRoot(container);
+root.render(<FormContainer />);
