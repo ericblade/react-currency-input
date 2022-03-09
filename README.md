@@ -1,5 +1,7 @@
 # @ericblade/react-currency-input
 
+[![Rolling Versions](https://img.shields.io/badge/Rolling%20Versions-Enabled-brightgreen)](https://rollingversions.com/ericblade/react-currency-input)
+
 Modern React component for currency input. Fork from https://github.com/jsillitoe/react-currency-input
 
 Supports custom decimal and thousand separators as well as precision.
