@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client';
 
 import CurrencyInput from '../dist/cjs/index.js';
 
-
 const ExampleForm = ({
   allowNegative,
   allowEmpty,
@@ -46,6 +45,7 @@ const ExampleForm = ({
         prefix={prefix}
         suffix={suffix}
         id="currency-input"
+        logValues={true}
       />
       <br />
       Use the form below to change the parameters in the CurrencyInput above.
@@ -211,7 +211,6 @@ function FormContainer() {
         suffix=" USD"
         id="null-input-test"
       />
-
     </div>
   );
 }
