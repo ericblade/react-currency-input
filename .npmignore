@@ -13,6 +13,7 @@ test/
 .ncurc
 .npmignore
 cypress.json
+cypress.config.ts
 debug.log
 tsconfig*.json
 webpack.config.js
