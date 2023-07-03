@@ -8,6 +8,9 @@ describe('test', () => {
     it('sanity startup', () => {
         cy.get('#currency-input').should('have.value', '$0.00 USD');
     });
+    it('undefined value results in correct 0 of input', () => {
+        cy.get('#null-input-test').should('have.value', '$0.00 USD');
+    })
 });
 
 describe('input caret selection', function() {

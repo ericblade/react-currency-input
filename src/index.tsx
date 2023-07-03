@@ -27,6 +27,8 @@ export type CurrencyInputProps = {
     id?: string,
     tabIndex?: number,
     value?: number | string, // TODO: this should probably just be string? at least until we drive this thing by pennies.
+
+    logValues?: boolean,
 };
 
 type CurrencyInputState = {
@@ -61,6 +63,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         suffix: '',
         selectAllOnFocus: false,
         disableSelectionHandling: false,
+        logValues: false,
     }
     inputSelectionStart: number = 1; // TODO: can we upgrade to target es2015+ and use private fields here?
     inputSelectionEnd: number = 1;
@@ -319,6 +322,9 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
             );
             return { maskedValue, value };
         }, () => {
+            if (this.props.logValues) {
+                console.log('** onChangeEvent', event, this.state.maskedValue, this.state.value);
+            }
             this.props.onChangeEvent(event, this.state.maskedValue, this.state.value);
         })
     }

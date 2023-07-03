@@ -13,25 +13,17 @@ export default function mask(
     if (precision < 0) { precision = 0; } // precision cannot be negative
     if (precision > 20) { precision = 20; } // precision cannot be greater than 20
 
-    if (value === null || value===undefined) {
-          return {
-              value: 0,
-              maskedValue: ''
-          };
-     }
-
-    value = String(value); //if the given value is a Number, let's convert into String to manipulate that
-
-    if (value.length === 0) {
+    if (!value) {
         return {
             value: 0,
-            maskedValue: ''
+            maskedValue: `${prefix}0${decimalSeparator}${'0'.repeat(precision)}${suffix}`,
         };
     }
 
+    value = String(value); //if the given value is a Number, let's convert into String to manipulate that
 
     // extract digits. if no digits, fill in a zero.
-    let digits = value.match(/\d/g) || ['0'];
+    const matchedDigits = value.match(/\d/g) || ['0'];
 
     let numberIsNegative = false;
     if (allowNegative) {
@@ -42,41 +34,31 @@ export default function mask(
         numberIsNegative = negativeSignCount % 2 === 1;
 
         // if every digit in the array is '0', then the number should never be negative
-        let allDigitsAreZero = true;
-        for (let idx=0; idx < digits.length; idx += 1) {
-            if(digits[idx] !== '0') {
-                allDigitsAreZero = false;
-                break;
-            }
-        }
-        if (allDigitsAreZero) {
+        if (matchedDigits.every(digit => digit === '0')) {
             numberIsNegative = false;
         }
     }
 
     // zero-pad a input
-    while (digits.length <= precision) { digits.unshift('0'); }
+    while (matchedDigits.length <= precision) { matchedDigits.unshift('0'); }
 
     if (precision > 0) {
         // add the decimal separator
-        digits.splice(digits.length - precision, 0, ".");
+        matchedDigits.splice(matchedDigits.length - precision, 0, ".");
     }
 
     // clean up extraneous digits like leading zeros.
-    digits = Number(digits.join('')).toFixed(precision).split('');
-    let raw = Number(digits.join(''));
+    const digits = Number(matchedDigits.join('')).toFixed(precision).split('');
+    let raw = Number(digits.join('')); // not const, we may make it negative later
 
-    let decimalPosition = digits.length - precision - 1;  // -1 needed to position the decimal separator before the digits.
+    const decimalPosition = (precision > 0) ? digits.length - precision - 1 : digits.length;
     if (precision > 0) {
         // set the final decimal separator
         digits[decimalPosition] = decimalSeparator;
-    } else {
-        // when precision is 0, there is no decimal separator.
-        decimalPosition = digits.length;
     }
 
     // add in any thousand separators
-    for (let x=decimalPosition - 3; x > 0; x = x - 3) {
+    for (let x = decimalPosition - 3; x > 0; x = x - 3) {
         digits.splice(x, 0, thousandSeparator);
     }
 
