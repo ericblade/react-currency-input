@@ -194,6 +194,24 @@ function FormContainer() {
         // onBlur={onBlur}
         onApply={onApply}
       />
+      <br />
+      Null Input Test:
+      <br />
+      <CurrencyInput
+        allowEmpty={allowEmpty}
+        allowNegative={allowNegative}
+        selectAllOnFocus={selectAllOnFocus}
+        disableSelectionHandling={disableSelectionHandling}
+        value={undefined}
+        decimalSeparator="."
+        thousandSeparator=","
+        precision={2}
+        inputType={inputType}
+        prefix="$"
+        suffix=" USD"
+        id="null-input-test"
+      />
+
     </div>
   );
 }
