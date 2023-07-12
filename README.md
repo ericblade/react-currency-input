@@ -8,6 +8,15 @@ Supports custom decimal and thousand separators as well as precision.
 
 Uniquely formats while inputting, including decimal and thousands separators, precision, prefixes and suffixes.  I have not found any other currency inputs that do this, and the original hasn't been touched for quite a long time, so that is why I fork this.
 
+# Changes since the original
+
+- Now in TypeScript
+- Supports React 17, 18
+- Totally new automated testing setup with Cypress
+- Automated Testing setup much more thorough
+- Caret selection redone and seems to work everywhere
+- Uses react-device-detect to workaround issues with Gboard
+
 ## Codepen Demonstrations
 
 There is a CodePen available which you may use to see the component in action, and play with all of it's various parameters to see how it works.  It is written with React and TypeScript.
@@ -30,7 +39,7 @@ There is a second CodePen, which mirrors the demonstration application in the "e
 ## Installation
 
 ```bash
-npm install react-currency-input --save
+npm install @ericblade/react-currency-input --save
 ```
 
 ## Integration
@@ -39,7 +48,7 @@ You can store the value passed in to the change handler in your state.
 
 ```javascript
 import React from 'react'
-import CurrencyInput from 'react-currency-input';
+import CurrencyInput from '@ericblade/react-currency-input';
 
 const MyApp = React.createClass({
     getInitialState(){
@@ -64,7 +73,7 @@ You can also assign a reference then access the value using a call to getMaskedV
 
 ```javascript
 import React from 'react'
-import CurrencyInput from 'react-currency-input';
+import CurrencyInput from '@ericblade/react-currency-input';
 
 const MyApp = React.createClass({
     handleSubmit(event){
