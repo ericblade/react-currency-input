@@ -49,6 +49,11 @@ type SelectionConstraints = {
 };
 
 class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputState> {
+    // if true, enable console logging for selection tracking
+    static DEBUG_SELECTION = false;
+    // if true, enable additional logging beyond selection tracking. does not imply DEBUG_SELECTION = true.
+    static DEBUG_FULL = false;
+
     static defaultProps: CurrencyInputProps = {
         onChangeEvent: function(event: React.ChangeEvent<HTMLInputElement>, maskedValue: string, value: number) {},
         autoFocus: false,
@@ -64,12 +69,11 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         selectAllOnFocus: false,
         disableSelectionHandling: false,
         logValues: false,
-    }
+    };
+
     inputSelectionStart: number = 1; // TODO: can we upgrade to target es2015+ and use private fields here?
     inputSelectionEnd: number = 1;
-    theInput: RefObject<HTMLInputElement> = React.createRef<HTMLInputElement>();
-    static DEBUG_SELECTION = false;
-    static DEBUG_FULL = false;
+    thisInputRef: RefObject<HTMLInputElement> = React.createRef<HTMLInputElement>();
 
     constructor(props: CurrencyInputProps) {
         super(props);
@@ -202,7 +206,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         if (prevState.disableSelectionHandling) {
             return null;
         }
-        const node = this.theInput.current;
+        const node = this.thisInputRef.current;
         return {
             inputSelectionStart: node.selectionStart,
             inputSelectionEnd: node.selectionEnd,
@@ -231,7 +235,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         if (this.state.disableSelectionHandling) {
             return;
         }
-        const node = this.theInput.current;
+        const node = this.thisInputRef.current;
 
         let prevSelectionStart = this.inputSelectionStart;
         let prevSelectionEnd = this.inputSelectionEnd;
@@ -333,7 +337,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      * Returns the minimum (start) and maximum (end) selection values, based on prefix, suffix, and negative status.
      */
     getSelectionConstraints(): SelectionConstraints {
-        const node = this.theInput.current;
+        const node = this.thisInputRef.current;
         if (this.state.disableSelectionHandling) {
             return {
                 start: 0,
@@ -360,7 +364,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         if (this.props.onFocus) {
             this.props.onFocus(event);
         }
-        const node = this.theInput.current;
+        const node = this.thisInputRef.current;
         if (!node) {
             return;
         }
@@ -401,7 +405,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
             return;
         }
         CurrencyInput.DEBUG_FULL && console.log('* handleSelect', event);
-        const node = this.theInput.current;
+        const node = this.thisInputRef.current;
         const constraints = this.getSelectionConstraints();
         CurrencyInput.DEBUG_SELECTION && console.warn('**** handleSelect', node.selectionStart, node.selectionEnd, constraints);
         this.inputSelectionStart = Math.max(node.selectionStart, constraints.start);
@@ -415,7 +419,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
     render() {
         return (
             <input
-                ref={this.theInput}
+                ref={this.thisInputRef}
                 type={this.props.inputType}
                 value={this.state.maskedValue}
                 onChange={this.handleChangeEvent}
