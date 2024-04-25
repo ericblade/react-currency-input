@@ -441,6 +441,6 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
 export default CurrencyInput;
 // TODO: quick way to enable/disable debugging on the fly, but should really be removed when we are
 // certain of stability.
-if (typeof 'window' !== 'undefined') {
+if (typeof window !== 'undefined') {
     window['CurrencyInput'] = CurrencyInput;
 }
