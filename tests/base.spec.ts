@@ -20,3 +20,5 @@ test.describe('base tests', () => {
         await expect(nullInputTest).toHaveValue('$0.00 USD');
     });
 });
+
+// TODO: add tests for each of the possible parameters
