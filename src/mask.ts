@@ -13,6 +13,10 @@ export default function mask(
     if (precision < 0) { precision = 0; } // precision cannot be negative
     if (precision > 20) { precision = 20; } // precision cannot be greater than 20
 
+    if (value === undefined || value === null || value === '') {
+        return { value: 0, maskedValue: '' };
+    }
+
     if (!value) {
         return {
             value: 0,
