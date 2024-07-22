@@ -12,7 +12,7 @@ Uniquely formats while inputting, including decimal and thousands separators, pr
 
 - Now in TypeScript
 - Supports React 17, 18
-- Totally new automated testing setup with Cypress
+- Totally new automated testing setup with ~~Cypress~~ Playwright (new in 1.4.2+)
 - Automated Testing setup much more thorough
 - Caret selection redone and seems to work everywhere
 - Uses react-device-detect to workaround issues with Gboard
