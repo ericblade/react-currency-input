@@ -35,38 +35,54 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
+      name: 'base tests',
+      testMatch: '**/base.spec.ts',
+    },
+    {
+      name: 'mask tests',
+      testMatch: '**/mask.spec.ts',
+      dependencies: ['base tests'],
+    },
+    {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      dependencies: ['base tests', 'mask tests'],
     },
 
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
+      dependencies: ['base tests', 'mask tests'],
     },
 
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
+      dependencies: ['base tests', 'mask tests'],
     },
 
     /* Test against mobile viewports. */
     {
       name: 'Mobile Chrome',
       use: { ...devices['Pixel 5'] },
+      dependencies: ['base tests', 'mask tests'],
     },
     {
       name: 'Mobile Safari',
       use: { ...devices['iPhone 12'] },
+      dependencies: ['base tests', 'mask tests'],
     },
 
     /* Test against branded browsers. */
     {
       name: 'Microsoft Edge',
       use: { ...devices['Desktop Edge'], channel: 'msedge' },
+      dependencies: ['base tests', 'mask tests'],
     },
     {
       name: 'Google Chrome',
       use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+      dependencies: ['base tests', 'mask tests'],
     },
   ],
 
