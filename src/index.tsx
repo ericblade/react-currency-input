@@ -36,6 +36,7 @@ type CurrencyInputState = {
     disableSelectionHandling: boolean,
     maskedValue: string,
     value: number | string, // TODO: should be string? should also have a separate float field for 'pennies'
+    previousProps?: Readonly<CurrencyInputProps>, // Track previous props to detect changes
 };
 
 type SelectionSnapshot = {
@@ -166,6 +167,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         );
 
         const disableSelectionHandling = propDisableSelectionHandling || inputType === 'number';
+        // Note: previousProps will be set in getDerivedStateFromProps
         return { maskedValue, value, customProps, disableSelectionHandling };
     }
 
@@ -182,11 +184,28 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      * @see https://reactjs.org/docs/react-component.html#static-getderivedstatefromprops
      */
     static getDerivedStateFromProps(nextProps: Readonly<CurrencyInputProps>, prevState: Readonly<CurrencyInputState>) {
-        const props = { ...nextProps };
-        if (nextProps.value !== prevState.value) {
-            props.value = prevState.value;
+        const previousProps = prevState.previousProps || nextProps; // First call has no previous props
+        
+        // Check if any props that affect value/formatting have changed
+        const valueChanged = nextProps.value !== previousProps.value;
+        const separatorsChanged = 
+            nextProps.decimalSeparator !== previousProps.decimalSeparator ||
+            nextProps.thousandSeparator !== previousProps.thousandSeparator;
+        const formattingChanged = 
+            nextProps.precision !== previousProps.precision ||
+            nextProps.allowNegative !== previousProps.allowNegative ||
+            nextProps.prefix !== previousProps.prefix ||
+            nextProps.suffix !== previousProps.suffix;
+        
+        if (valueChanged || separatorsChanged || formattingChanged) {
+            // Something changed - prepare new state and track these props
+            const newState = CurrencyInput.prepareProps(nextProps);
+            return { ...newState, previousProps: nextProps };
         }
-        return CurrencyInput.prepareProps(props);
+        
+        // Nothing significant changed - preserve current state but update previousProps reference
+        // This allows onChange to update state without interference
+        return { ...prevState, previousProps: nextProps };
     }
 
     /**
