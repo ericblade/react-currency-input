@@ -210,9 +210,22 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
             return { ...newState, previousProps: nextProps };
         }
 
-        // Other props changed (allowNegative) but value and display formatting didn't
-        // Don't reformat - just update the previousProps reference and preserve current state
-        // This allows allowNegative to toggle without erasing the user's input
+        // Check if allowNegative changed
+        const allowNegativeChanged = nextProps.allowNegative !== previousProps.allowNegative;
+        
+        if (allowNegativeChanged && !nextProps.allowNegative) {
+            // allowNegative was disabled
+            // If current value is negative, make it positive
+            const currentValue = typeof prevState.value === 'number' ? prevState.value : 0;
+            if (currentValue < 0) {
+                const propsWithPositiveValue = { ...nextProps, value: Math.abs(currentValue) };
+                const newState = CurrencyInput.prepareProps(propsWithPositiveValue);
+                return { ...newState, previousProps: nextProps };
+            }
+        }
+
+        // Other props changed but value and display formatting didn't
+        // Just update the previousProps reference and preserve current state
         return { ...prevState, previousProps: nextProps };
     }
 

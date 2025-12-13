@@ -218,6 +218,36 @@ test.describe('component parameters', () => {
             value = await currencyInput.inputValue();
             expect(value).toContain('-');
         });
+
+        test('removes negative sign when allowNegative is disabled', async ({ page }) => {
+            // First enable allowNegative
+            const allowNegativeCheckbox = page.locator('[name=allowNegative]');
+            const applyBtn = page.locator('[name=apply]');
+
+            await allowNegativeCheckbox.check();
+            await applyBtn.click();
+            await page.waitForTimeout(200);
+            
+            const currencyInput = page.locator('#currency-input');
+            await currencyInput.focus();
+            await currencyInput.selectText();
+            
+            // Input a negative number
+            await currencyInput.pressSequentially('50');
+            await currencyInput.press('Minus');
+            
+            let value = await currencyInput.inputValue();
+            expect(value).toContain('-');
+            
+            // Now disable allowNegative
+            await allowNegativeCheckbox.uncheck();
+            await applyBtn.click();
+            await page.waitForTimeout(200);
+            
+            // Value should now be positive
+            value = await currencyInput.inputValue();
+            expect(value).not.toContain('-');
+        });
     });
 
     test.describe('allowEmpty', () => {
