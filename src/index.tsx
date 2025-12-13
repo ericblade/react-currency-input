@@ -185,26 +185,34 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      */
     static getDerivedStateFromProps(nextProps: Readonly<CurrencyInputProps>, prevState: Readonly<CurrencyInputState>) {
         const previousProps = prevState.previousProps || nextProps; // First call has no previous props
-        
-        // Check if any props that affect value/formatting have changed
+
+        // Check if the VALUE prop itself changed (parent is controlling the input)
         const valueChanged = nextProps.value !== previousProps.value;
-        const separatorsChanged = 
+        
+        // Check if separators or display formatting changed (these require reformatting the current value)
+        const formatChanged =
             nextProps.decimalSeparator !== previousProps.decimalSeparator ||
-            nextProps.thousandSeparator !== previousProps.thousandSeparator;
-        const formattingChanged = 
+            nextProps.thousandSeparator !== previousProps.thousandSeparator ||
             nextProps.precision !== previousProps.precision ||
-            nextProps.allowNegative !== previousProps.allowNegative ||
             nextProps.prefix !== previousProps.prefix ||
             nextProps.suffix !== previousProps.suffix;
-        
-        if (valueChanged || separatorsChanged || formattingChanged) {
-            // Something changed - prepare new state and track these props
+
+        if (valueChanged) {
+            // Parent changed the value prop - use the new value
             const newState = CurrencyInput.prepareProps(nextProps);
             return { ...newState, previousProps: nextProps };
         }
         
-        // Nothing significant changed - preserve current state but update previousProps reference
-        // This allows onChange to update state without interference
+        if (formatChanged) {
+            // Display formatting changed - reformat the current value with new formatting
+            const propsWithCurrentValue = { ...nextProps, value: prevState.value };
+            const newState = CurrencyInput.prepareProps(propsWithCurrentValue);
+            return { ...newState, previousProps: nextProps };
+        }
+
+        // Other props changed (allowNegative) but value and display formatting didn't
+        // Don't reformat - just update the previousProps reference and preserve current state
+        // This allows allowNegative to toggle without erasing the user's input
         return { ...prevState, previousProps: nextProps };
     }
 

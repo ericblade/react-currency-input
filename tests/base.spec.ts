@@ -179,38 +179,48 @@ test.describe('component parameters', () => {
 
     test.describe('allowNegative', () => {
         test('rejects negative input when allowNegative is false', async ({ page }) => {
+            // allowNegative is false by default, so minus signs should be rejected
             const currencyInput = page.locator('#currency-input');
             await currencyInput.focus();
-            await currencyInput.fill('');
-            await currencyInput.type('100');
+            await currencyInput.selectText();
+            await currencyInput.pressSequentially('-100');
 
             // Should not contain minus sign since allowNegative is false by default
             const value = await currencyInput.inputValue();
             expect(value).not.toContain('-');
         });
 
-        test('allows typing when allowNegative is false', async ({ page }) => {
+        test('accepts negative numbers when allowNegative is true', async ({ page }) => {
+            // Enable allowNegative via form control
+            const allowNegativeCheckbox = page.locator('[name=allowNegative]');
+            const applyBtn = page.locator('[name=apply]');
+
+            await allowNegativeCheckbox.check();
+            await applyBtn.click();
+
+            // Wait for the state to update and component to re-render
+            await page.waitForTimeout(200);
+            
             const currencyInput = page.locator('#currency-input');
             await currencyInput.focus();
-            await currencyInput.fill('');
-            await currencyInput.type('100');
-
-            // Should have numeric content
-            const value = await currencyInput.inputValue();
-            expect(value).toMatch(/\d/);
+            await currencyInput.selectText();
+            
+            // First input a number (can't have negative zero)
+            await currencyInput.pressSequentially('50');
+            
+            let value = await currencyInput.inputValue();
+            expect(value).toContain('0.50');
+            
+            // Now add the minus sign - should toggle the number to negative
+            await currencyInput.press('Minus');
+            
+            // Should now contain minus sign
+            value = await currencyInput.inputValue();
+            expect(value).toContain('-');
         });
     });
 
     test.describe('allowEmpty', () => {
-        test('does not allow empty value when allowEmpty is false', async ({ page }) => {
-            const currencyInput = page.locator('#currency-input');
-            await currencyInput.focus();
-            await currencyInput.fill('');
-
-            // Should default to 0.00 when allowEmpty is false
-            await expect(currencyInput).toHaveValue('$0.00 USD');
-        });
-
         test('maintains default value after clearing', async ({ page }) => {
             const currencyInput = page.locator('#currency-input');
             await currencyInput.focus();
