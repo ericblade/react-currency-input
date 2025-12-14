@@ -11,7 +11,7 @@ test.describe('base tests', () => {
     });
 
     test('sanity startup', async ({ page }) => {
-        const currencyInput = await page.locator('#currency-input');
+        const currencyInput = page.locator('#currency-input');
         await expect(currencyInput).toHaveValue('$0.00 USD');
     });
 
@@ -96,8 +96,8 @@ test.describe('component parameters', () => {
             await decimalInput.fill(',');
             await applyBtn.click();
 
-            await page.waitForTimeout(100);
             const currencyInput = page.locator('#currency-input');
+            await expect(currencyInput).toHaveValue('0,00');
             await currencyInput.focus();
             await currencyInput.fill('');
             await currencyInput.type('12345');
@@ -120,8 +120,8 @@ test.describe('component parameters', () => {
             await precisionInput.fill('2');
             await applyBtn.click();
 
-            await page.waitForTimeout(100);
             const currencyInput = page.locator('#currency-input');
+            await expect(currencyInput).toHaveValue('0,00');
             await currencyInput.focus();
             await currencyInput.fill('');
             await currencyInput.type('1234567');
@@ -145,8 +145,8 @@ test.describe('component parameters', () => {
             await precisionInput.fill('0');
             await applyBtn.click();
 
-            await page.waitForTimeout(100);
             const currencyInput = page.locator('#currency-input');
+            await expect(currencyInput).toHaveValue('0');
             await currencyInput.focus();
             await currencyInput.fill('');
             await currencyInput.type('12345');
@@ -167,8 +167,8 @@ test.describe('component parameters', () => {
             await precisionInput.fill('3');
             await applyBtn.click();
 
-            await page.waitForTimeout(100);
             const currencyInput = page.locator('#currency-input');
+            await expect(currencyInput).toHaveValue('0.000');
             await currencyInput.focus();
             await currencyInput.fill('');
             await currencyInput.type('12345');
@@ -194,26 +194,24 @@ test.describe('component parameters', () => {
             // Enable allowNegative via form control
             const allowNegativeCheckbox = page.locator('[name=allowNegative]');
             const applyBtn = page.locator('[name=apply]');
+            const currencyInput = page.locator('#currency-input');
 
             await allowNegativeCheckbox.check();
             await applyBtn.click();
 
-            // Wait for the state to update and component to re-render
-            await page.waitForTimeout(200);
-            
-            const currencyInput = page.locator('#currency-input');
+            await expect(currencyInput).toHaveValue('$0.00 USD');
             await currencyInput.focus();
             await currencyInput.selectText();
-            
+
             // First input a number (can't have negative zero)
             await currencyInput.pressSequentially('50');
-            
+
             let value = await currencyInput.inputValue();
             expect(value).toContain('0.50');
-            
+
             // Now add the minus sign - should toggle the number to negative
             await currencyInput.press('Minus');
-            
+
             // Should now contain minus sign
             value = await currencyInput.inputValue();
             expect(value).toContain('-');
@@ -223,27 +221,25 @@ test.describe('component parameters', () => {
             // First enable allowNegative
             const allowNegativeCheckbox = page.locator('[name=allowNegative]');
             const applyBtn = page.locator('[name=apply]');
+            const currencyInput = page.locator('#currency-input');
 
             await allowNegativeCheckbox.check();
             await applyBtn.click();
-            await page.waitForTimeout(200);
-            
-            const currencyInput = page.locator('#currency-input');
+            await expect(currencyInput).toHaveValue('$0.00 USD');
             await currencyInput.focus();
             await currencyInput.selectText();
-            
+
             // Input a negative number
             await currencyInput.pressSequentially('50');
             await currencyInput.press('Minus');
-            
+
             let value = await currencyInput.inputValue();
             expect(value).toContain('-');
-            
+
             // Now disable allowNegative
             await allowNegativeCheckbox.uncheck();
             await applyBtn.click();
-            await page.waitForTimeout(200);
-            
+
             // Value should now be positive
             value = await currencyInput.inputValue();
             expect(value).not.toContain('-');
@@ -275,18 +271,14 @@ test.describe('component parameters', () => {
             await selectAllCheckbox.check();
             await applyBtn.click();
 
-            await page.waitForTimeout(100);
             const currencyInput = page.locator('#currency-input');
             await currencyInput.focus();
 
-            // With selectAllOnFocus, all text should be selected
-            // The selection should encompass the content
-            const inputValue = await currencyInput.inputValue();
-            const selectionStart = await currencyInput.evaluate((el: HTMLInputElement) => el.selectionStart);
-            const selectionEnd = await currencyInput.evaluate((el: HTMLInputElement) => el.selectionEnd);
-
-            // Should have selected content
-            expect(selectionEnd - selectionStart).toBeGreaterThan(0);
+            await expect.poll(async () => {
+                const selectionStart = await currencyInput.evaluate((el: HTMLInputElement) => el.selectionStart ?? 0);
+                const selectionEnd = await currencyInput.evaluate((el: HTMLInputElement) => el.selectionEnd ?? 0);
+                return selectionEnd - selectionStart;
+            }).toBeGreaterThan(0);
         });
     });
 

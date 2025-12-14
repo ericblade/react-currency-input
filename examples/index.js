@@ -69,7 +69,7 @@ const ExampleForm = ({
       <br />
       <input type="checkbox" name="disableSelectionHandling" defaultChecked={disableSelectionHandling} /> Disable selection handling
       <br />
-      {/* <input type="text" name="value" placeholder="Value" defaultValue={value} />Value<br /> */}
+      <input type="text" name="value" placeholder="Value" defaultValue={value} />Value<br />
       <input
         type="text"
         name="decimalSeparator"
@@ -163,7 +163,7 @@ function FormContainer() {
     setDisableSelectionHandling(
       document.getElementsByName("disableSelectionHandling")[0].checked
     );
-    // setValue(document.getElementsByName('value')[0].value);
+    setValue(document.getElementsByName('value')[0].value);
     setDecimalSeparator(document.getElementsByName("decimalSeparator")[0].value);
     setThousandSeparator(
       document.getElementsByName("thousandSeparator")[0].value

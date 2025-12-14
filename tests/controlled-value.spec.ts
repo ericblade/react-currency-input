@@ -11,9 +11,7 @@ test.describe('controlled component (value prop updates)', () => {
   });
 
   test('should update input value when value prop changes externally', async ({ page }) => {
-    // This test simulates the reported bug:
-    // A parent component changes the value prop (e.g., via a button click that calls setAmount(22.22))
-    // and the CurrencyInput should reflect that change.
+    // Simulate a parent-driven prop change by updating the form-controlled value field.
 
     const currencyInput = page.locator('#currency-input');
 
@@ -30,17 +28,14 @@ test.describe('controlled component (value prop updates)', () => {
     await expect(currencyInput).toHaveValue('$50.00 USD');
 
     // Now change the value via the form control (simulating external prop change)
-    const prefixInput = page.locator('[name=prefix]');
-    const suffixInput = page.locator('[name=suffix]');
+    const valueInput = page.locator('[name=value]');
     const applyBtn = page.locator('[name=apply]');
 
-    // Set a different prefix/suffix to force a refresh, but keep the same value
-    // The component should preserve the currently formatted value
-    await prefixInput.fill('$');
-    await suffixInput.fill(' USD');
+    // Simulate a parent setting the controlled value to 22.22
+    await valueInput.fill('22.22');
     await applyBtn.click();
 
-    // Input should still show the value it had
-    await expect(currencyInput).toHaveValue('$50.00 USD');
+    // Input should reflect the externally provided value (22.22)
+    await expect(currencyInput).toHaveValue('$22.22 USD');
   });
 });

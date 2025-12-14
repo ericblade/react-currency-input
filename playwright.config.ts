@@ -46,6 +46,12 @@ export default defineConfig({
     {
       name: 'controlled-value tests',
       testMatch: '**/controlled-value.spec.ts',
+      dependencies: ['base tests'],
+    },
+    {
+      name: 'input-type tests',
+      testMatch: '**/input-type.spec.ts',
+      dependencies: ['base tests'],
     },
     {
       name: 'chromium',
