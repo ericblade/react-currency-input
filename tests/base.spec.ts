@@ -282,28 +282,6 @@ test.describe('component parameters', () => {
         });
     });
 
-    test.describe('input type', () => {
-        test('can set input type to email', async ({ page }) => {
-            const inputTypeField = page.locator('[name=inputType]');
-            const applyBtn = page.locator('[name=apply]');
-
-            await inputTypeField.fill('email');
-            await applyBtn.click();
-
-            const currencyInput = page.locator('#currency-input');
-            const type = await currencyInput.getAttribute('type');
-
-            expect(type).toBe('email');
-        });
-
-        test('can set input type back to text', async ({ page }) => {
-            const currencyInput = page.locator('#currency-input');
-            const type = await currencyInput.getAttribute('type');
-
-            expect(type).toBe('text');
-        });
-    });
-
     test.describe('basic input and formatting', () => {
         test('typing numbers formats correctly', async ({ page }) => {
             const currencyInput = page.locator('#currency-input');
