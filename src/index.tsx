@@ -189,13 +189,17 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         // Check if the VALUE prop itself changed (parent is controlling the input)
         const valueChanged = nextProps.value !== previousProps.value;
 
+        // Check if allowNegative changed (affects whether negative values are allowed)
+        const allowNegativeChanged = nextProps.allowNegative !== previousProps.allowNegative;
+
         // Check if separators or display formatting changed (these require reformatting the current value)
         const formatChanged =
             nextProps.decimalSeparator !== previousProps.decimalSeparator ||
             nextProps.thousandSeparator !== previousProps.thousandSeparator ||
             nextProps.precision !== previousProps.precision ||
             nextProps.prefix !== previousProps.prefix ||
-            nextProps.suffix !== previousProps.suffix;
+            nextProps.suffix !== previousProps.suffix ||
+            allowNegativeChanged;
 
         if (valueChanged) {
             // Parent changed the value prop - use the new value
@@ -204,19 +208,13 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         }
 
         if (formatChanged) {
-            // Display formatting changed - reformat the current value with new formatting
-            const propsWithCurrentValue = { ...nextProps, value: prevState.value };
-            const newState = CurrencyInput.prepareProps(propsWithCurrentValue);
-            return { ...newState, previousProps: nextProps };
-        }
+            // Display formatting or allowNegative changed - reformat the current value
+            // First, determine the value to use. Start with the current state value,
+            // which may be adjusted below if allowNegative was disabled and value is negative.
+            let valueToFormat = prevState.value;
 
-        // Check if allowNegative changed
-        const allowNegativeChanged = nextProps.allowNegative !== previousProps.allowNegative;
-
-        if (allowNegativeChanged) {
-            if (!nextProps.allowNegative) {
-                // allowNegative was disabled
-                // If current value is negative, make it positive
+            if (allowNegativeChanged && !nextProps.allowNegative) {
+                // allowNegative was disabled - if current value is negative, make it positive
                 const parsedValue = typeof prevState.value === 'number'
                     ? prevState.value
                     : prevState.value === null
@@ -224,13 +222,14 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
                         : CurrencyInput.stringValueToFloat(String(prevState.value), nextProps.thousandSeparator, nextProps.decimalSeparator);
 
                 if (parsedValue < 0) {
-                    const propsWithPositiveValue = { ...nextProps, value: Math.abs(parsedValue) };
-                    const newState = CurrencyInput.prepareProps(propsWithPositiveValue);
-                    return { ...newState, previousProps: nextProps };
+                    valueToFormat = Math.abs(parsedValue);
                 }
             }
-            // allowNegative toggled on or no sign change needed: still advance previousProps
-            return { ...prevState, previousProps: nextProps };
+
+            // Reformat with new formatting and potentially adjusted value
+            const propsWithCurrentValue = { ...nextProps, value: valueToFormat };
+            const newState = CurrencyInput.prepareProps(propsWithCurrentValue);
+            return { ...newState, previousProps: nextProps };
         }
 
         // Other props changed but value and display formatting didn't

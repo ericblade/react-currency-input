@@ -244,6 +244,38 @@ test.describe('component parameters', () => {
             value = await currencyInput.inputValue();
             expect(value).not.toContain('-');
         });
+
+        test('removes negative sign when allowNegative is disabled and format changes simultaneously', async ({ page }) => {
+            // First enable allowNegative
+            const allowNegativeCheckbox = page.locator('[name=allowNegative]');
+            const prefixInput = page.locator('[name=prefix]');
+            const applyBtn = page.locator('[name=apply]');
+            const currencyInput = page.locator('#currency-input');
+
+            await allowNegativeCheckbox.check();
+            await applyBtn.click();
+            await expect(currencyInput).toHaveValue('$0.00 USD');
+            await currencyInput.focus();
+            await currencyInput.selectText();
+
+            // Input a negative number
+            await currencyInput.pressSequentially('50');
+            await currencyInput.press('Minus');
+
+            let value = await currencyInput.inputValue();
+            expect(value).toContain('-');
+
+            // Now disable allowNegative AND change prefix at the same time
+            await allowNegativeCheckbox.uncheck();
+            await prefixInput.fill('€');
+            await applyBtn.click();
+
+            // Value should now be positive AND have the new prefix
+            value = await currencyInput.inputValue();
+            expect(value).not.toContain('-');
+            expect(value).toContain('€');
+            expect(value).toContain('50');
+        });
     });
 
     test.describe('allowEmpty', () => {
