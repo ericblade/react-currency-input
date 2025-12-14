@@ -209,7 +209,8 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
 
         if (formatChanged) {
             // Display formatting or allowNegative changed - reformat the current value
-            // First, determine the value to use (convert negative to positive if needed)
+            // First, determine the value to use. Start with the current state value,
+            // which may be adjusted below if allowNegative was disabled and value is negative.
             let valueToFormat = prevState.value;
             
             if (allowNegativeChanged && !nextProps.allowNegative) {
