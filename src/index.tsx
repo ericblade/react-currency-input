@@ -212,7 +212,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
             // First, determine the value to use. Start with the current state value,
             // which may be adjusted below if allowNegative was disabled and value is negative.
             let valueToFormat = prevState.value;
-            
+
             if (allowNegativeChanged && !nextProps.allowNegative) {
                 // allowNegative was disabled - if current value is negative, make it positive
                 const parsedValue = typeof prevState.value === 'number'
@@ -225,7 +225,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
                     valueToFormat = Math.abs(parsedValue);
                 }
             }
-            
+
             // Reformat with new formatting and potentially adjusted value
             const propsWithCurrentValue = { ...nextProps, value: valueToFormat };
             const newState = CurrencyInput.prepareProps(propsWithCurrentValue);
