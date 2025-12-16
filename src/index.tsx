@@ -36,6 +36,7 @@ type CurrencyInputState = {
     disableSelectionHandling: boolean,
     maskedValue: string,
     value: number | string, // TODO: should be string? should also have a separate float field for 'pennies'
+    previousProps?: Readonly<CurrencyInputProps>, // Track previous props to detect changes
 };
 
 type SelectionSnapshot = {
@@ -124,22 +125,23 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      * General function used to cleanup and define the final props used for rendering
      * @returns CurrencyInputState
      */
-    static prepareProps({
-        onChangeEvent,
-        value: propValue,
-        decimalSeparator,
-        thousandSeparator,
-        precision,
-        inputType,
-        allowNegative,
-        allowEmpty,
-        prefix,
-        suffix,
-        selectAllOnFocus,
-        autoFocus,
-        disableSelectionHandling: propDisableSelectionHandling,
-        ...customProps
-    }: Readonly<CurrencyInputProps>): CurrencyInputState {
+    static prepareProps(props: Readonly<CurrencyInputProps>): CurrencyInputState {
+        const {
+            onChangeEvent,
+            value: propValue,
+            decimalSeparator,
+            thousandSeparator,
+            precision,
+            inputType,
+            allowNegative,
+            allowEmpty,
+            prefix,
+            suffix,
+            selectAllOnFocus,
+            autoFocus,
+            disableSelectionHandling: propDisableSelectionHandling,
+            ...customProps
+        } = props;
         let initialValue = propValue;
         if (initialValue === null) {
             initialValue = allowEmpty ? null : '';
@@ -166,7 +168,7 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
         );
 
         const disableSelectionHandling = propDisableSelectionHandling || inputType === 'number';
-        return { maskedValue, value, customProps, disableSelectionHandling };
+        return { maskedValue, value, customProps, disableSelectionHandling, previousProps: props };
     }
 
     /**
@@ -182,11 +184,57 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
      * @see https://reactjs.org/docs/react-component.html#static-getderivedstatefromprops
      */
     static getDerivedStateFromProps(nextProps: Readonly<CurrencyInputProps>, prevState: Readonly<CurrencyInputState>) {
-        const props = { ...nextProps };
-        if (nextProps.value !== prevState.value) {
-            props.value = prevState.value;
+        const previousProps = prevState.previousProps || nextProps; // First call uses the initial props snapshot
+
+        // Check if the VALUE prop itself changed (parent is controlling the input)
+        const valueChanged = nextProps.value !== previousProps.value;
+
+        // Check if allowNegative changed (affects whether negative values are allowed)
+        const allowNegativeChanged = nextProps.allowNegative !== previousProps.allowNegative;
+
+        // Check if separators or display formatting changed (these require reformatting the current value)
+        const formatChanged =
+            nextProps.decimalSeparator !== previousProps.decimalSeparator ||
+            nextProps.thousandSeparator !== previousProps.thousandSeparator ||
+            nextProps.precision !== previousProps.precision ||
+            nextProps.prefix !== previousProps.prefix ||
+            nextProps.suffix !== previousProps.suffix ||
+            allowNegativeChanged;
+
+        if (valueChanged) {
+            // Parent changed the value prop - use the new value
+            const newState = CurrencyInput.prepareProps(nextProps);
+            return { ...newState, previousProps: nextProps };
         }
-        return CurrencyInput.prepareProps(props);
+
+        if (formatChanged) {
+            // Display formatting or allowNegative changed - reformat the current value
+            // First, determine the value to use. Start with the current state value,
+            // which may be adjusted below if allowNegative was disabled and value is negative.
+            let valueToFormat = prevState.value;
+
+            if (allowNegativeChanged && !nextProps.allowNegative) {
+                // allowNegative was disabled - if current value is negative, make it positive
+                const parsedValue = typeof prevState.value === 'number'
+                    ? prevState.value
+                    : prevState.value === null
+                        ? 0
+                        : CurrencyInput.stringValueToFloat(String(prevState.value), nextProps.thousandSeparator, nextProps.decimalSeparator);
+
+                if (parsedValue < 0) {
+                    valueToFormat = Math.abs(parsedValue);
+                }
+            }
+
+            // Reformat with new formatting and potentially adjusted value
+            const propsWithCurrentValue = { ...nextProps, value: valueToFormat };
+            const newState = CurrencyInput.prepareProps(propsWithCurrentValue);
+            return { ...newState, previousProps: nextProps };
+        }
+
+        // Other props changed but value and display formatting didn't
+        // Just update the previousProps reference and preserve current state
+        return { ...prevState, previousProps: nextProps };
     }
 
     /**

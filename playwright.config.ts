@@ -44,6 +44,16 @@ export default defineConfig({
       dependencies: ['base tests'],
     },
     {
+      name: 'controlled-value tests',
+      testMatch: '**/controlled-value.spec.ts',
+      dependencies: ['base tests'],
+    },
+    {
+      name: 'input-type tests',
+      testMatch: '**/input-type.spec.ts',
+      dependencies: ['base tests'],
+    },
+    {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
       dependencies: ['base tests', 'mask tests'],
