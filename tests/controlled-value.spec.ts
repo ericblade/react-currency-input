@@ -10,6 +10,20 @@ test.describe('controlled component (value prop updates)', () => {
     await page.goto(fileUrl);
   });
 
+  test('should update input when parent value changes from one integer to another', async ({ page }) => {
+    const currencyInput = page.locator('#currency-input');
+    const valueInput = page.locator('[name=value]');
+    const applyBtn = page.locator('[name=apply]');
+
+    await valueInput.fill('2');
+    await applyBtn.click();
+    await expect(currencyInput).toHaveValue('$2.00 USD');
+
+    await valueInput.fill('4');
+    await applyBtn.click();
+    await expect(currencyInput).toHaveValue('$4.00 USD');
+  });
+
   test('should update input value when value prop changes externally', async ({ page }) => {
     // Simulate a parent-driven prop change by updating the form-controlled value field.
 
