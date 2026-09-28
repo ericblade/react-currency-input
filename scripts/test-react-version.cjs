@@ -3,10 +3,20 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const reactMajor = process.argv[2];
+const mode = process.argv[3] || 'compat';
 const supportedMajors = new Set(['16', '17', '18', '19']);
+const modeToTestScript = {
+  compat: 'test:compat',
+  'all-browsers': 'test:all-browsers',
+};
 
 if (!supportedMajors.has(reactMajor)) {
-  console.error('Usage: npm run test:with-react -- <16|17|18|19>');
+  console.error('Usage: npm run test:with-react -- <16|17|18|19> [compat|all-browsers]');
+  process.exit(1);
+}
+
+if (!modeToTestScript[mode]) {
+  console.error('Mode must be one of: compat, all-browsers');
   process.exit(1);
 }
 
@@ -73,8 +83,13 @@ run('npm', ['install', '--no-save', '--no-package-lock', '--legacy-peer-deps', .
 
 ensureReactDomClientShimForLegacy(reactMajor);
 
-console.log('Ensuring Playwright Chromium is installed...');
-run('npx', ['playwright', 'install', 'chromium']);
+if (mode === 'all-browsers') {
+  console.log('Ensuring all Playwright browsers are installed...');
+  run('npx', ['playwright', 'install']);
+} else {
+  console.log('Ensuring Playwright Chromium is installed...');
+  run('npx', ['playwright', 'install', 'chromium']);
+}
 
-console.log(`Running tests with React ${reactMajor}.x...`);
-run('npm', ['run', 'test:compat']);
+console.log(`Running ${modeToTestScript[mode]} with React ${reactMajor}.x...`);
+run('npm', ['run', modeToTestScript[mode]]);
