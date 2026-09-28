@@ -128,6 +128,9 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
     static prepareProps(props: Readonly<CurrencyInputProps>): CurrencyInputState {
         const {
             onChangeEvent,
+            onBlur,
+            onClick,
+            onFocus,
             value: propValue,
             decimalSeparator,
             thousandSeparator,
@@ -140,6 +143,10 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
             selectAllOnFocus,
             autoFocus,
             disableSelectionHandling: propDisableSelectionHandling,
+            style,
+            id,
+            tabIndex,
+            logValues,
             ...customProps
         } = props;
         let initialValue = propValue;
