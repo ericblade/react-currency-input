@@ -128,6 +128,9 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
     static prepareProps(props: Readonly<CurrencyInputProps>): CurrencyInputState {
         const {
             onChangeEvent,
+            onBlur,
+            onClick,
+            onFocus,
             value: propValue,
             decimalSeparator,
             thousandSeparator,
@@ -140,6 +143,10 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
             selectAllOnFocus,
             autoFocus,
             disableSelectionHandling: propDisableSelectionHandling,
+            style,
+            id,
+            tabIndex,
+            logValues,
             ...customProps
         } = props;
         let initialValue = propValue;
@@ -166,6 +173,18 @@ class CurrencyInput extends React.Component<CurrencyInputProps, CurrencyInputSta
             prefix,
             suffix
         );
+
+        // Exhaustive check: if a new field is added to CurrencyInputProps but not destructured
+        // above, TypeScript will produce a compile error here (missing key in the object literal).
+        const _: Record<keyof Required<CurrencyInputProps>, unknown> = {
+            onBlur, onClick, onFocus, onChangeEvent,
+            allowEmpty, allowNegative, autoFocus,
+            disableSelectionHandling: propDisableSelectionHandling, selectAllOnFocus,
+            decimalSeparator, inputType, precision, prefix, style, suffix, thousandSeparator,
+            id, tabIndex, value: propValue,
+            logValues,
+        };
+        void _;
 
         const disableSelectionHandling = propDisableSelectionHandling || inputType === 'number';
         return { maskedValue, value, customProps, disableSelectionHandling, previousProps: props };
