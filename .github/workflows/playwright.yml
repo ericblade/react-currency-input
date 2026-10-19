@@ -57,7 +57,7 @@ jobs:
         retention-days: 30
 
   push-react-matrix:
-    if: github.event_name == 'push' && needs.detect-push-pr-association.outputs.has_pr != 'true'
+    if: github.event_name == 'push'
     needs: detect-push-pr-association
     strategy:
       fail-fast: false
