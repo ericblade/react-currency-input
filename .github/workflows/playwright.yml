@@ -47,6 +47,8 @@ jobs:
       run: npm ci --legacy-peer-deps
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+    - name: Install additional browser system dependencies
+      run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libgtk-4-1 libgraphene-1.0-0 libavif16
     - name: Run all browser Playwright tests (React ${{ matrix.react-major }})
       run: npm run test:with-react -- ${{ matrix.react-major }} all-browsers
     - uses: actions/upload-artifact@v4
@@ -74,6 +76,8 @@ jobs:
       run: npm ci --legacy-peer-deps
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+    - name: Install additional browser system dependencies
+      run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libgtk-4-1 libgraphene-1.0-0 libavif16
     - name: Run all browser Playwright tests (React ${{ matrix.react-major }})
       run: npm run test:with-react -- ${{ matrix.react-major }} all-browsers
     - uses: actions/upload-artifact@v4
