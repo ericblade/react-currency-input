@@ -11,11 +11,28 @@ Uniquely formats while inputting, including decimal and thousands separators, pr
 # Changes since the original
 
 - Now in TypeScript
-- Supports React 17, 18
+- Supports React 16, 17, 18, 19
 - Totally new automated testing setup with ~~Cypress~~ Playwright (new in 1.4.2+)
 - Automated Testing setup much more thorough
 - Caret selection redone and seems to work everywhere
 - Uses react-device-detect to workaround issues with Gboard
+
+## Testing Across React Versions
+
+This package can be tested against React 16 through 19 locally:
+
+```bash
+npm run test:react16
+npm run test:react17
+npm run test:react18
+npm run test:react19
+```
+
+Run all of them in sequence:
+
+```bash
+npm run test:matrix
+```
 
 ## Codepen Demonstrations
 
